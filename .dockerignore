@@ -1,0 +1,17 @@
+!*
+!manage.py
+!requirements.txt
+.travis
+.travis.yml
+.vscode
+venv
+.git
+.gitignore
+db.sqlite3
+exclude.lst
+static
+.idea
+dist
+bin
+nginx
+Caddyfile*

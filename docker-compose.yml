@@ -1,0 +1,46 @@
+version: "3"
+services:
+  macro_server:
+    image: todo_compose:latest
+    container_name: core_service
+    ports:
+      - "8000:8000"
+    environment:
+      DB_ENDPOINT: db
+      MYSQL_PORT: 3306
+    volumes:
+      - todo:/data
+    # 指定网络，这一步必须要和以来的服务处于统一网络
+    networks:
+      - todo
+    # 依赖于redis和mysql，在启动本服务之前会先启动依赖的服务
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # MySQL服务，上面的构建服务直接拷贝下来即可
+  db:
+    container_name: db
+    image: mysql:5.7
+    platform: linux/amd64
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: '1234'
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'no'
+      MYSQL_DATABASE: 'todo'
+      MYSQL_USER: 'pinshan'
+      MYSQL_PASSWORD: 'burrito'
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 5s
+      retries: 5
+    volumes:
+      - todo:/var/lib/mysql
+    networks:
+      - todo
+    command: --default-authentication-plugin=mysql_native_password
+networks:
+  todo:
+volumes:
+  todo:

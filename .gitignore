@@ -1,0 +1,10 @@
+__pycache__
+.env*
+db.sqlite3
+.idea
+.DS_Store
+logs/*
+celerybeat-schedule
+venv
+.ipynb_checkpoints
+.doc/
