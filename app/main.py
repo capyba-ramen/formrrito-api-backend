@@ -1,8 +1,7 @@
 from fastapi import Depends, FastAPI, HTTPException
-from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
-from environmemt import ALLOWED_HOSTS
 from . import crud, models, schemas
 from .database import SessionLocal, engine
 
@@ -10,7 +9,19 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-app.add_middleware(TrustedHostMiddleware, allowed_hosts=ALLOWED_HOSTS)
+# app.add_middleware(TrustedHostMiddleware, allowed_hosts=ALLOWED_HOSTS)
+origins = [
+    "http://localhost",
+    "http://localhost:3333",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/hi")
