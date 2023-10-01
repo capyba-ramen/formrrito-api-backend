@@ -1,12 +1,16 @@
 from fastapi import Depends, FastAPI, HTTPException
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from sqlalchemy.orm import Session
 
+from environmemt import ALLOWED_HOSTS
 from . import crud, models, schemas
 from .database import SessionLocal, engine
 
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+
+app.add_middleware(TrustedHostMiddleware, allowed_hosts=ALLOWED_HOSTS)
 
 
 @app.get("/hi")
