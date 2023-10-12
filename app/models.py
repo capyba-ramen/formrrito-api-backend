@@ -11,6 +11,7 @@ class User(Base):
     username = Column(String(50))
     email = Column(String(100), unique=True, index=True)
     password = Column(String(50))
+    role = Column(Integer, nullable=False, default=0)
     created_at = Column(DateTime, nullable=True)
     todos = relationship("Todo", back_populates="owner")
 
