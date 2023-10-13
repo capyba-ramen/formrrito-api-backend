@@ -3,7 +3,7 @@ from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app import models, schemas
+from app import models, schemas, auth
 from app.main import get_db
 from . import crud
 
@@ -14,8 +14,10 @@ router = APIRouter()
     "/list",
     description="get user list"
 )
-def get_users():
-    return "HELLO USERS"
+def get_users(user_name=Depends(auth.authorize_user), db: Session = Depends(get_db)):
+    print(f"Authorized:{user_name}")
+    users = crud.get_users(db)
+    return users
 
 
 @router.post("/")
