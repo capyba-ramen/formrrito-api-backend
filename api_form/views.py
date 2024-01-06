@@ -10,6 +10,6 @@ router = APIRouter()
 @router.get(
     "/{user_id}"
 )
-def get_todos(user_id: int, db: Session = Depends(get_db)):
-    todos = crud.get_todos(db, user_id=user_id)
+def get_forms(user_id: int, db: Session = Depends(get_db)):
+    todos = crud.get_forms(db, user_id=user_id)
     return todos
