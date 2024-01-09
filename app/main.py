@@ -7,7 +7,6 @@ from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 from sqlalchemy.orm import Session
-
 from . import models
 from .database import SessionLocal, engine
 
@@ -20,7 +19,7 @@ resource = {}
 
 # use lifespan to fulfill things required during initiation
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def app_lifespan(app: FastAPI):
     print("init lifespan")
 
     resource["greeting"] = "Capybaramen wish you a good day!"
@@ -40,7 +39,7 @@ async def lifespan(app: FastAPI):
                 service_type = match_obj.group(1)
                 service_name = match_obj.group(2)
                 modules.append((service_type, service_name, file_name))
-        print("modules: %s", modules)
+            print("modules: %s", modules)
 
         for service_type, service_name, file_name in modules:
             module = importlib.import_module("{}.views".format(file_name))
@@ -60,7 +59,7 @@ async def lifespan(app: FastAPI):
     print(resource)
 
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(lifespan=app_lifespan)
 
 # app.add_middleware(TrustedHostMiddleware, allowed_hosts=ALLOWED_HOSTS)
 origins = [
@@ -80,7 +79,7 @@ app.add_middleware(
 
 
 @app.get("/hi")
-def root():
+async def root():
     result = resource["greeting"]
     return {
         "message": result

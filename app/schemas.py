@@ -11,10 +11,11 @@ class Todo(BaseModel):
 
 class UserBaseIn(BaseModel):
     username: str
+    password: str
     email: str
 
 
 class UserBaseOut(BaseModel):
-    id: int
+    id: str
     username: str
     email: Optional[str]
