@@ -12,7 +12,7 @@ router = APIRouter()
     "/info",
     description="get user list"
 )
-async def get_user_list(
+def get_user_list(
         user=Depends(auth.get_current_user)
 ):
     print(f"Authorized:{user}")
@@ -24,7 +24,7 @@ async def get_user_list(
     description="註冊新使用者",
     operation_id="create_user",
 )
-async def create_user(
+def create_user(
         inputs: schemas.UserBaseIn,
         db: Session = Depends(get_db)
 ):
@@ -56,7 +56,7 @@ async def create_user(
 
 
 @router.get("/{user_id}", response_model=schemas.UserBaseOut, operation_id="get_user")
-async def get_user(user_id: int, db: Session = Depends(get_db)):
+def get_user(user_id: int, db: Session = Depends(get_db)):
     db_user = crud.get_user(db, user_id=user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")

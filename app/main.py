@@ -79,7 +79,7 @@ app.add_middleware(
 
 
 @app.get("/hi")
-async def root():
+def root():
     result = resource["greeting"]
     return {
         "message": result
