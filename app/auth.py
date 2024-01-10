@@ -55,7 +55,7 @@ class RolePermission:
 
 
 # ==================OAuth2 for Authentication=========================
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/token")
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -102,7 +102,7 @@ def create_access_token(data: dict, expires_delta: Union[timedelta, None] = None
     return encoded_jwt
 
 
-async def get_current_user(
+def get_current_user(
         token=Depends(oauth2_scheme)
 ):
     credentials_exception = HTTPException(
@@ -124,10 +124,10 @@ async def get_current_user(
 
 
 @app.post(
-    "/token",
+    "/api/user/token",
     response_model=Token
 )
-async def login_for_access_token(
+def login_for_access_token(
         form_data: OAuth2PasswordRequestForm = Depends(),
         db: Session = Depends(get_db)
 ):

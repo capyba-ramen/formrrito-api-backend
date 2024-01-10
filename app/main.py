@@ -7,10 +7,9 @@ from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 from sqlalchemy.orm import Session
-from . import models
-from .database import SessionLocal, engine
+from .database import SessionLocal
 
-models.Base.metadata.create_all(bind=engine)
+# models.Base.metadata.create_all(bind=engine) # create tables
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 

@@ -1,16 +1,15 @@
-from app import models, schemas, auth
-from app.auth import hash_password
+from app import auth
 from app.main import get_db
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from . import crud
+from . import crud, actions, schemas
 
 router = APIRouter()
 
 
 @router.get(
     "/info",
-    description="get user list"
+    description="取得使用者資訊"
 )
 def get_user_list(
         user=Depends(auth.get_current_user)
@@ -20,9 +19,8 @@ def get_user_list(
 
 
 @router.post(
-    "/",
-    description="註冊新使用者",
-    operation_id="create_user",
+    "/signup",
+    description="註冊新使用者"
 )
 def create_user(
         inputs: schemas.UserBaseIn,
@@ -32,30 +30,31 @@ def create_user(
     create user
     """
     try:
-        new_user = models.User(
-            username=inputs.username,
-            email=inputs.email,
-            hashed_password=hash_password(inputs.password)
+        result, user = actions.create_user(
+            inputs=inputs,
+            db=db
         )
-        db.add(new_user)
-        db.commit()
-    except Exception as ex:
-        print("create user occurs error, rolling back")
-        print(ex)
-        db.rollback()
-        return False
 
-    return {
-        "success": True,
-        "data": schemas.UserBaseOut(
-            id=new_user.id,
-            username=new_user.username,
-            email=new_user.email
-        )
-    }
+        return {
+            "success": result,
+            "data": schemas.UserBaseOut(
+                id=user.id,
+                username=user.username,
+                email=user.email
+            )
+        }
+    except Exception as error:
+        return {
+            "success": False,
+            "message": str(error)
+        }
 
 
-@router.get("/{user_id}", response_model=schemas.UserBaseOut, operation_id="get_user")
+@router.get(
+    "/{user_id}",
+    response_model=schemas.UserBaseOut,
+    description="取得使用者資訊"
+)
 def get_user(user_id: int, db: Session = Depends(get_db)):
     db_user = crud.get_user(db, user_id=user_id)
     if db_user is None:
