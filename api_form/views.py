@@ -1,13 +1,13 @@
+from fastapi import APIRouter, Depends, Query, Body, Path
+from sqlalchemy.orm import Session
+
 from app import auth
 from app.main import get_db
-from fastapi import APIRouter, Depends, Query, Body
-from sqlalchemy.orm import Session
 from . import actions, schemas
 
 router = APIRouter()
 
 
-# TODO: 表單列表
 @router.get(
     "/list",
     description="表單列表"
@@ -23,8 +23,22 @@ def get_forms(
     return result
 
 
+@router.get(
+    "/{form_id}",
+    description="取得單筆表單資料"
+)
+def get_form(
+        user=Depends(auth.get_current_user),
+        form_id: str = Path(..., title="表單代碼"),
+        db: Session = Depends(get_db)
+):
+    result = actions.get_form(user.user_id, form_id, db)
+    return result
+
+
 @router.post(
     "/",
+    response_model=schemas.CreateFormOut,
     description="新增表單"
 )
 def create_form(
@@ -35,7 +49,9 @@ def create_form(
         user_id=user.user_id,
         db=db
     )
-    return result
+    return schemas.CreateFormOut(
+        form_id=result
+    )
 
 
 @router.put(
@@ -47,11 +63,26 @@ def update_form(
         inputs: schemas.UpdateFormIn = Body(..., title="表單修改資料"),
         db: Session = Depends(get_db)
 ):
-    print(inputs)
-
     result = actions.update_form(
         user_id=user.user_id,
         inputs=inputs,
+        db=db
+    )
+    return result
+
+
+@router.delete(
+    "/{form_id}",
+    description="刪除表單"
+)
+def delete_form(
+        user=Depends(auth.get_current_user),
+        form_id: str = Path(..., title="表單代碼"),
+        db: Session = Depends(get_db)
+):
+    result = actions.delete_form(
+        user_id=user.user_id,
+        form_id=form_id,
         db=db
     )
     return result

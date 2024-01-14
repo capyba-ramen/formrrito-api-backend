@@ -1,7 +1,6 @@
 import datetime
 import uuid
 
-from api_form.constants import QuestionType
 from sqlalchemy import (
     Column,
     String,
@@ -10,6 +9,9 @@ from sqlalchemy import (
     Boolean,
     ForeignKey
 )
+from sqlalchemy.orm import relationship
+
+from api_form.constants import QuestionType
 from .database import Base
 
 
@@ -33,6 +35,7 @@ class Form(Base):
     accepts_reply = Column(Boolean, default=True, comment="是否接受回覆")
     created_at = Column(DateTime, default=datetime.datetime.now)
     opened_at = Column(DateTime, default=datetime.datetime.now)
+    questions = relationship("Question", cascade="all, delete")
 
 
 class Question(Base):
@@ -47,6 +50,7 @@ class Question(Base):
     image_url = Column(String(150), comment="圖片網址")
     order = Column(Integer, nullable=False, comment="問題順序(排序用)")
     created_at = Column(DateTime, default=datetime.datetime.now)
+    options = relationship("Option", cascade="all, delete")
 
 
 class Option(Base):

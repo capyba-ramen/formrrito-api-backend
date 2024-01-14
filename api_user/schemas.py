@@ -11,3 +11,9 @@ class UserBaseOut(BaseModel):
     id: str = Field(..., description="使用者代碼")
     username: str = Field(..., description="使用者名稱")
     email: str = Field(..., description="電子郵件")
+
+
+class SignIn(BaseModel):
+    email: str = Field(..., description="電子郵件")
+    password: str = Field(..., description="密碼")
+   

@@ -18,3 +18,4 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     ".localhost"
 ]
+ACCESS_TOKEN_EXPIRE_MINUTES = 30

@@ -1,11 +1,19 @@
+import uuid
 from typing import Any
+
+from sqlalchemy.orm import Session
 
 from app.models import Form
 from components.paginator import paginate_data
-from sqlalchemy.orm import Session
 
 
 def get_form_by_id(form_id: str, db: Session):
+    form = db.query(Form).filter(Form.id == form_id).first()
+    return form
+
+
+def get_form_detail_by_id(form_id: str, db: Session):
+    # TODO: together with questions and options
     form = db.query(Form).filter(Form.id == form_id).first()
     return form
 
@@ -36,11 +44,13 @@ def create_form(
         user_id: str,
         db: Session
 ):
+    form_id = str(uuid.uuid4())
     form = Form(
+        id=form_id,
         user_id=user_id
     )
     db.add(form)
-    return True
+    return form_id
 
 
 def update_form(
@@ -54,4 +64,12 @@ def update_form(
         form.description = value
     elif field == 'accepts_reply':
         form.accepts_reply = value
+    return True
+
+
+def delete_form(
+        form: Form,
+        db: Session
+):
+    db.delete(form)
     return True

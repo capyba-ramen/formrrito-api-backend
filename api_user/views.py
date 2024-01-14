@@ -1,8 +1,12 @@
+from datetime import timedelta
+
+from fastapi import APIRouter, Depends, Body, HTTPException, status
+from sqlalchemy.orm import Session
+
 from app import auth
 from app.main import get_db
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-from . import crud, actions, schemas
+from environmemt import ACCESS_TOKEN_EXPIRE_MINUTES
+from . import actions, schemas
 
 router = APIRouter()
 
@@ -50,18 +54,29 @@ def create_user(
         }
 
 
-@router.get(
-    "/{user_id}",
-    response_model=schemas.UserBaseOut,
-    description="取得使用者資訊"
+@router.post(
+    "/signin",
+    response_model=auth.Token
 )
-def get_user(user_id: int, db: Session = Depends(get_db)):
-    db_user = crud.get_user(db, user_id=user_id)
-    if db_user is None:
-        raise HTTPException(status_code=404, detail="User not found")
+def login_for_access_token(
+        inputs: schemas.SignIn = Body(..., title="表單修改資料"),
+        db: Session = Depends(get_db)
+):
+    """
+    The response should be a JSON object
+    The response should have a token_type: "bearer"
+    """
 
-    return schemas.UserBaseOut(
-        id=db_user.id,
-        username=db_user.username,
-        email=db_user.email
+    user = auth.authenticate_user(db, inputs.email, inputs.password)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"}
+        )
+
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = auth.create_access_token(
+        data={"sub": user.username, "user_id": user.id}, expires_delta=access_token_expires
     )
+    return {"access_token": access_token, "token_type": "bearer"}

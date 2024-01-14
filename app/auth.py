@@ -1,15 +1,17 @@
 from datetime import datetime, timedelta
 from typing import Dict, List, Union
 
-from api_user import crud
-from app.main import get_db
-from environmemt import SECRET_KEY, ALGORITHM
 from fastapi import Request, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import jwt, JWTError
 from passlib.context import CryptContext
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
+
+from api_user import crud
+from app.main import get_db
+from environmemt import ACCESS_TOKEN_EXPIRE_MINUTES
+from environmemt import SECRET_KEY, ALGORITHM
 from .main import app
 
 
@@ -55,8 +57,7 @@ class RolePermission:
 
 
 # ==================OAuth2 for Authentication=========================
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/user/token")
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/token")
 
 password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -83,8 +84,8 @@ def verify_password(password: str, hashed_password):
     return password_context.verify(password, hashed_password)
 
 
-def authenticate_user(db: Session, username: str, password: str):
-    user = crud.get_user_by_username(db, username)
+def authenticate_user(db: Session, email: str, password: str):
+    user = crud.get_user_by_email(db, email)
     if not user or not verify_password(password, user.hashed_password):
         return False
 
@@ -124,7 +125,7 @@ def get_current_user(
 
 
 @app.post(
-    "/api/user/token",
+    "/api/auth/token",
     response_model=Token
 )
 def login_for_access_token(
