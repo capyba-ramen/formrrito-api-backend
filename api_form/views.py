@@ -14,7 +14,7 @@ router = APIRouter()
 )
 def get_forms(
         user=Depends(auth.get_current_user),
-        start: int = Query(0, title="從第幾筆資料開始"),
+        start: int = Query(1, title="從第幾筆資料開始"),
         size: int = Query(10, title="一次撈回幾筆資料"),
         sort: str = Query("asc", title="排序方式"),
         db: Session = Depends(get_db)
