@@ -6,9 +6,12 @@ from app.models import Question
 from . import schemas
 
 
-def get_question_by_id(question_id: str, db: Session):
-    form = db.query(Question).filter(Question.id == question_id).first()
-    return form
+def get_question_by_id(question_id: str, form_id: str, db: Session):
+    form_query = db.query(Question).filter(Question.id == question_id)
+    if form_id:
+        form_query = form_query.filter(Question.form_id == form_id)
+
+    return form_query.first()
 
 
 def create_question(

@@ -50,7 +50,7 @@ class Question(Base):
     image_url = Column(String(150), comment="圖片網址")
     order = Column(Integer, nullable=False, comment="問題順序(排序用)")
     created_at = Column(DateTime, default=datetime.datetime.now)
-    options = relationship("Option", cascade="all, delete")
+    options = relationship("Option", cascade="all, delete", order_by="Option.id")
 
 
 class Option(Base):

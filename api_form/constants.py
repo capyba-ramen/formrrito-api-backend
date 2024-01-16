@@ -7,4 +7,3 @@ class QuestionType(enum.IntEnum):
     SINGLE = 2  # 單選
     MULTIPLE = 3  # 複選
     DROP_DOWN = 4  # 下拉選單
-   

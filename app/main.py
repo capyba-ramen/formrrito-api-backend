@@ -7,6 +7,7 @@ from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 from sqlalchemy.orm import Session
+
 from .database import SessionLocal
 
 # models.Base.metadata.create_all(bind=engine) # create tables
@@ -106,9 +107,9 @@ def custom_openapi():
         return app.openapi_schema
 
     openapi_schema = get_openapi(
-        title="Capybaramen TODO app",
+        title="Formrrito",
         version="0.1.0",
-        description="Just an ordinary todo app",
+        description="Just an ordinary form generator",
         routes=app.routes
     )
 
