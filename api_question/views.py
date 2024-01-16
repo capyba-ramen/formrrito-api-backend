@@ -9,6 +9,24 @@ router = APIRouter()
 
 
 @router.post(
+    "/order",
+    # response_model=bool,
+    description="調整問題順序"
+)
+def change_order(
+        user=Depends(auth.get_current_user),
+        inputs: schemas.ChangeQuestionOrderIn = Body(...),
+        db: Session = Depends(get_db)
+):
+    result = actions.change_order(
+        user_id=user.user_id,
+        inputs=inputs,
+        db=db
+    )
+    return result
+
+
+@router.post(
     "/{form_id}",
     response_model=schemas.CreateQuestionOut,
     description="新增單筆問題"

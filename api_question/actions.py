@@ -128,3 +128,34 @@ def delete_question(
     )
 
     return result
+
+
+@transaction
+def change_order(
+        user_id: str,
+        inputs: schemas.ChangeQuestionOrderIn,
+        db: Session
+):
+    # 驗證使用者是否有權限
+    form = form_crud.get_form_by_id(inputs.form_id, db)
+
+    if form is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="表單不存在"
+        )
+
+    if form.user_id != user_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="無權限修改問題"
+        )
+    questions = crud.get_questions_by_form_id(
+        form_id=inputs.form_id,
+        db=db
+    )
+
+    return crud.change_order(
+        questions=questions,
+        question_order=inputs.question_ids_in_order
+    )

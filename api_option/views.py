@@ -61,7 +61,7 @@ def delete_option(
         user=Depends(auth.get_current_user),
         form_id: str = Path(..., title="表單代碼"),
         question_id: str = Path(..., title="問題代碼"),
-        option_id: str = Path(..., title="選項代碼"),
+        option_id: int = Path(..., title="選項代碼"),
         db: Session = Depends(get_db)
 ):
     result = actions.delete_option(

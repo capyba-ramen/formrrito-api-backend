@@ -1,4 +1,5 @@
 import uuid
+from typing import List
 
 from sqlalchemy.orm import Session
 
@@ -12,6 +13,10 @@ def get_question_by_id(question_id: str, form_id: str, db: Session):
         form_query = form_query.filter(Question.form_id == form_id)
 
     return form_query.first()
+
+
+def get_questions_by_form_id(form_id: str, db: Session):
+    return db.query(Question).filter(Question.form_id == form_id).all()
 
 
 def create_question(
@@ -49,4 +54,15 @@ def delete_question(
         db: Session
 ):
     db.delete(question)
+    return True
+
+
+def change_order(
+        questions: [Question],
+        question_order: List[str]
+):
+    for index, question_id in enumerate(question_order):
+        question = next(filter(lambda q: q.id == question_id, questions))
+        question.order = index + 1
+
     return True

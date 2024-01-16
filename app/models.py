@@ -35,7 +35,8 @@ class Form(Base):
     accepts_reply = Column(Boolean, default=True, comment="是否接受回覆")
     created_at = Column(DateTime, default=datetime.datetime.now)
     opened_at = Column(DateTime, default=datetime.datetime.now)
-    questions = relationship("Question", cascade="all, delete")
+    questions = relationship("Question", cascade="all, delete",
+                             order_by="Question.order.asc(), Question.created_at.asc()")
 
 
 class Question(Base):

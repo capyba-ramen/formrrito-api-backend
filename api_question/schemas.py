@@ -1,3 +1,5 @@
+from typing import List
+
 from pydantic import BaseModel, Field
 
 
@@ -17,3 +19,8 @@ class UpdateQuestionIn(BaseModel):
 class DeleteQuestionIn(BaseModel):
     form_id: str = Field(..., description="表單代碼")
     question_id: str = Field(..., description="問題代碼")
+
+
+class ChangeQuestionOrderIn(BaseModel):
+    form_id: str = Field(..., description="表單代碼")
+    question_ids_in_order: List[str] = Field(..., description="問題代碼列表依照順序排列")
