@@ -63,6 +63,6 @@ def change_order(
 ):
     for index, question_id in enumerate(question_order):
         question = next(filter(lambda q: q.id == question_id, questions))
-        question.order = index + 1
+        question.order = index
 
     return True
