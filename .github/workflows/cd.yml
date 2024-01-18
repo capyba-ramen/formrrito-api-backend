@@ -1,0 +1,21 @@
+name: CD pipeline
+
+on:
+  workflow_run:
+    workflows: ["CI Pipeline"]
+    types:
+      - completed
+
+jobs:
+
+  build:
+
+    runs-on: self-hosted
+
+    steps:
+      - name: Pull Docker image from Dockerhub
+        run: sudo docker pull pschuang/formrrito-cicd-pipeline
+      - name: Delete the old docker container
+        run: sudo docker rm -f formrrito-cicd-pipeline-container || true
+      - name: Run docker container
+        run: sudo docker run -d -p 80:8000 --name  formrrito-cicd-pipeline-container pschuang/formrrito-cicd-pipeline
