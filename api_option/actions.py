@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -13,7 +14,7 @@ def create_options(
         user_id: str,
         form_id: str,
         question_id: str,
-        options: list[str],
+        options: List[str],
         db: Session
 ):
     # 驗證使用者是否有權限修改表單
