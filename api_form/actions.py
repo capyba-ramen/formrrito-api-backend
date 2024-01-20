@@ -35,8 +35,8 @@ def get_forms(
                     questions=[
                         schemas.QuestionOut(
                             id=question.id,
-                            title=question.title,
-                            description=question.description,
+                            title=question.title if question.title else "",
+                            description=question.description if question.description else "",
                             type=question.type,
                             is_required=question.is_required,
                             options=[
