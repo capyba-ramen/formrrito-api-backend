@@ -72,4 +72,6 @@ class Reply(Base):
     question_id = Column(String(40), ForeignKey("question.id"), nullable=False)
     option_id = Column(Integer, ForeignKey("option.id"))
     answer = Column(String(150), unique=True, comment="簡答/詳答的回覆")
+    question_type = Column(Integer, default=QuestionType.SIMPLE.value, comment="問題類型")
+    option_title = Column(String(50), comment="選項名稱")
     created_at = Column(DateTime, default=datetime.datetime.now)
