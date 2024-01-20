@@ -1,10 +1,12 @@
 import uuid
 from typing import Any
+from datetime import datetime
 
 from sqlalchemy.orm import Session, joinedload
 
 from app.models import Form, Question
 from components.paginator import paginate_data
+from components.db_decorators import transaction
 
 
 def get_form_by_id(form_id: str, db: Session):
@@ -21,12 +23,20 @@ def get_form_detail_by_id(form_id: str, db: Session):
     return form
 
 
-def get_forms(user_id: str, start: int, size: int, sort, db: Session):
+def get_forms_by_user_query(user_id: str, db: Session):
+
+    return db.query(Form).filter(
+        Form.user_id == user_id
+    )
+
+
+def get_forms_by_user_with_order_and_size(user_id: str, start: int, size: int, sort, db: Session):
     order = Form.opened_at.asc() if sort == 'ASC' else Form.opened_at.desc()
 
     form_query = db.query(Form).filter(
         Form.user_id == user_id
     )
+
     form_query_with_conditions = form_query.order_by(
         order
     ).offset(
@@ -35,12 +45,9 @@ def get_forms(user_id: str, start: int, size: int, sort, db: Session):
         size + 1  # 多撈一筆判斷是否有下一頁!!
     )
 
-    return paginate_data(
-        form_query,
-        form_query_with_conditions,
-        start,
-        size
-    )
+    data = form_query_with_conditions.all()
+
+    return data
 
 
 def create_form(
@@ -68,6 +75,15 @@ def update_form(
     elif field == 'accepts_reply':
         form.accepts_reply = value
     return True
+
+
+@transaction
+def update_form_opened_at(
+        form: Form,
+        db: Session
+):
+    form.opened_at = datetime.now()
+    return form
 
 
 def delete_form(

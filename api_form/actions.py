@@ -1,7 +1,9 @@
+from datetime import datetime
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
 from components.db_decorators import transaction
+from components.paginator import paginate_data
 from . import crud, schemas
 
 
@@ -17,8 +19,49 @@ def get_forms(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="start 或 size 不可小於 0"
         )
-    forms = crud.get_forms(user_id, start, size, sort, db)
-    return forms
+    forms = crud.get_forms_by_user_with_order_and_size(user_id, start, size, sort, db)
+
+    def transform_data(orm):
+        transformed_result = []
+        for form in orm:
+            transformed_result.append(
+                schemas.FormOut(
+                    id=form.id,
+                    title=form.title if form.title else "",
+                    description=form.description if form.description else "",
+                    accepts_reply=form.accepts_reply,
+                    created_at=form.created_at,
+                    opened_at=form.opened_at,
+                    questions=[
+                        schemas.QuestionOut(
+                            id=question.id,
+                            title=question.title,
+                            description=question.description,
+                            type=question.type,
+                            is_required=question.is_required,
+                            options=[
+                                schemas.OptionOut(
+                                    id=option.id,
+                                    title=option.title
+                                )
+                                for option in question.options
+                            ]
+                        )
+                        for question in form.questions
+                    ]
+                )
+            )
+        return transformed_result
+
+    result = paginate_data(
+        crud.get_forms_by_user_query(user_id, db),
+        forms,
+        transform_data,
+        start,
+        size
+    )
+
+    return result
 
 
 def get_form(
@@ -27,6 +70,7 @@ def get_form(
         db: Session
 ):
     form = crud.get_form_detail_by_id(form_id, db)
+
     if form is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -39,7 +83,16 @@ def get_form(
             detail="無權限瀏覽表單"
         )
 
-    return form
+    crud.update_form_opened_at(form=form, db=db)  # 更新表格開啟時間
+
+    return schemas.FormBaseOut(
+        id=form.id,
+        title=form.title if form.title else "",
+        description=form.description if form.description else "",
+        accepts_reply=form.accepts_reply,
+        created_at=form.created_at,
+        opened_at=form.opened_at
+    )
 
 
 @transaction

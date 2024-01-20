@@ -32,7 +32,7 @@ def get_form(
         form_id: str = Path(..., title="表單代碼"),
         db: Session = Depends(get_db)
 ):
-    result = actions.get_form(user.user_id, form_id, db)
+    result = actions.get_form(user_id=user.user_id, form_id=form_id, db=db)
     return result
 
 
