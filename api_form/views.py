@@ -4,13 +4,16 @@ from sqlalchemy.orm import Session
 from app import auth
 from app.main import get_db
 from . import actions, schemas
+from components.paginator import BasePageOut
+
 
 router = APIRouter()
 
 
 @router.get(
     "/list",
-    description="表單列表"
+    description="表單列表",
+    response_model=BasePageOut[schemas.FormBaseOut]
 )
 def get_forms(
         user=Depends(auth.get_current_user),
@@ -25,7 +28,8 @@ def get_forms(
 
 @router.get(
     "/{form_id}",
-    description="取得單筆表單資料"
+    description="取得單筆表單資料",
+    response_model=schemas.FormOut
 )
 def get_form(
         user=Depends(auth.get_current_user),
@@ -56,6 +60,7 @@ def create_form(
 
 @router.put(
     "/",
+    response_model=bool,
     description="修改表單"
 )
 def update_form(
@@ -73,7 +78,8 @@ def update_form(
 
 @router.delete(
     "/{form_id}",
-    description="刪除表單"
+    response_model=bool,
+    description="刪除表單",
 )
 def delete_form(
         user=Depends(auth.get_current_user),
