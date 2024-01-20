@@ -32,6 +32,7 @@ class Form(Base):
     user_id = Column(String(40), ForeignKey("user.id"))
     title = Column(String(50), comment="表單名稱")
     description = Column(String(150), comment="表單描述")
+    image_url = Column(String(150), comment="圖片網址")
     accepts_reply = Column(Boolean, default=True, comment="是否接受回覆")
     created_at = Column(DateTime, default=datetime.datetime.now)
     opened_at = Column(DateTime, default=datetime.datetime.now)
