@@ -25,30 +25,13 @@ def get_forms(
         transformed_result = []
         for form in orm:
             transformed_result.append(
-                schemas.FormOut(
+                schemas.FormBaseOut(
                     id=form.id,
                     title=form.title if form.title else "",
                     description=form.description if form.description else "",
                     accepts_reply=form.accepts_reply,
                     created_at=form.created_at,
-                    opened_at=form.opened_at,
-                    questions=[
-                        schemas.QuestionOut(
-                            id=question.id,
-                            title=question.title if question.title else "",
-                            description=question.description if question.description else "",
-                            type=question.type,
-                            is_required=question.is_required,
-                            options=[
-                                schemas.OptionOut(
-                                    id=option.id,
-                                    title=option.title
-                                )
-                                for option in question.options
-                            ]
-                        )
-                        for question in form.questions
-                    ]
+                    opened_at=form.opened_at
                 )
             )
         return transformed_result
@@ -85,13 +68,30 @@ def get_form(
 
     crud.update_form_opened_at(form=form, db=db)  # 更新表格開啟時間
 
-    return schemas.FormBaseOut(
+    return schemas.FormOut(
         id=form.id,
         title=form.title if form.title else "",
         description=form.description if form.description else "",
         accepts_reply=form.accepts_reply,
         created_at=form.created_at,
-        opened_at=form.opened_at
+        opened_at=form.opened_at,
+        questions=[
+            schemas.QuestionOut(
+                id=question.id,
+                title=question.title if question.title else "",
+                description=question.description if question.description else "",
+                type=question.type,
+                is_required=question.is_required,
+                options=[
+                    schemas.OptionOut(
+                        id=option.id,
+                        title=option.title
+                    )
+                    for option in question.options
+                ]
+            )
+            for question in form.questions
+        ]
     )
 
 
