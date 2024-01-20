@@ -1,14 +1,11 @@
-from fastapi.testclient import TestClient
-
-from app.main import app
-
-client = TestClient(app)
+from . import client
 
 
 def test_root():
     response = client.get("/hi")
     assert response.status_code == 200
-    assert response.json() == {"message": "Capybaramen wish you a good day!"}
+    assert response.json() == "Hello World"
+
 
 # def test_create_user():
 #     # case 1: 成功建立

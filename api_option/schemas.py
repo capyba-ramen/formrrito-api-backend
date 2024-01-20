@@ -3,10 +3,13 @@ from typing import List
 from pydantic import BaseModel, Field
 
 
+class OptionIn(BaseModel):
+    id: int = Field(..., description="選項代碼")
+    title: str = Field(None, description="選項名稱")
+
+
 class CreateOptionsIn(BaseModel):
-    options: List[str] = Field(..., description="選項標題")
+    options: List[OptionIn] = Field(..., description="選項列表")
 
 
-class UpdateOptionIn(BaseModel):
-    option_id: int = Field(..., description="表單代碼")
-    title: str = Field(None, description="問題名稱")
+

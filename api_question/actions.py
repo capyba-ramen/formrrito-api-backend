@@ -5,6 +5,7 @@ from api_form import crud as form_crud
 from api_form.constants import QuestionType
 from components.db_decorators import transaction
 from . import crud, schemas
+from api_option import crud as option_crud
 
 
 @transaction
@@ -85,7 +86,28 @@ def update_question(
         fields=inputs,
     )
 
-    return result
+    # 如果問題是選擇題且要把問題類型改成其他類型，則刪除所有選項
+    if question.type in [
+        QuestionType.SINGLE.value,
+        QuestionType.MULTIPLE.value,
+        QuestionType.DROP_DOWN.value,
+    ] and inputs.type not in [
+        QuestionType.SINGLE.value,
+        QuestionType.MULTIPLE.value,
+        QuestionType.DROP_DOWN.value,
+    ]:
+        options = option_crud.get_options_by_question_id(
+            question_id=question.id,
+            db=db
+        )
+
+        for option in options:
+            option_crud.delete_option(
+                option=option,
+                db=db
+            )
+
+    return True
 
 
 @transaction
