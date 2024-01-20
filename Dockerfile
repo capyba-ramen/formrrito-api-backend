@@ -24,4 +24,5 @@ EXPOSE 8000
 
 # Run the application in the port 8000
 # CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+RUN chmod 744 /startup.sh
 CMD ["./startup.sh"]
