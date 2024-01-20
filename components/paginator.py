@@ -1,22 +1,22 @@
-from typing import List, Any
+from typing import List, Any, Callable
 
 from pydantic import BaseModel, Field
 
 
 def paginate_data(
         query,
-        query_with_conditions,
+        data,
+        transform_data_function: Callable,
         start: int,
         size: int
 ):
-    result = query_with_conditions.all()
     return BasePage(
-        result=result[:size],
-        has_next=len(result) > size,
+        result=transform_data_function(data[:size]),
+        has_next=len(data) > size,
         offset=start,
         limit=size,
         count=query.count(),
-        next=start + size if len(result) > size else -1
+        next=start + size if len(data) > size else -1
     )
 
 
