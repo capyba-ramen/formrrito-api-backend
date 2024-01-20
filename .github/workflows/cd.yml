@@ -19,8 +19,8 @@ jobs:
           DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
         run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
       - name: Pull Docker image from Dockerhub
-        run: sudo docker pull pschuang/formrrito-cicd-pipeline:latest
+        run: docker pull pschuang/formrrito-cicd-pipeline:latest
       - name: Delete the old docker container
-        run: sudo docker rm -f formrrito-cicd-pipeline-container || true
+        run: docker rm -f formrrito-cicd-pipeline-container || true
       - name: Run docker container
-        run: sudo docker run -d --name formrrito-cicd-pipeline-container -p 80:8000 pschuang/formrrito-cicd-pipeline
+        run: docker run -d --name formrrito-cicd-pipeline-container -p 80:8000 pschuang/formrrito-cicd-pipeline
