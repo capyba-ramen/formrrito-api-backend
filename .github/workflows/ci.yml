@@ -16,23 +16,17 @@ jobs:
         env:
           DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
           DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
-          ALGORITHM: ${{secrets.ALGORITHM}}
-          SECRET_KEY: ${{secrets.SECRET_KEY}}
-          DB_ENDPOINT: ${{secrets.DB_ENDPOINT}}
-          DB_NAME: ${{secrets.DB_NAME}}
-          DB_USER: ${{secrets.DB_USER}}
-          DB_PASSWORD: ${{secrets.DB_PASSWORD}}
-          DB_PORT: ${{secrets.DB_PORT}}
         run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+      - name: Echo secrets
+        run: |
+          echo 'ALGORITHM=${{ secrets.ALGORITHM }}' >> .env
+          echo 'SECRET_KEY=${{ secrets.SECRET_KEY }}' >> .env
+          echo 'DB_ENDPOINT=${{ secrets.DB_ENDPOINT }}' >> .env
+          echo 'DB_NAME=${{ secrets.DB_NAME }}' >> .env
+          echo 'DB_USER=${{ secrets.DB_USER }}' >> .env
+          echo 'DB_PASSWORD=${{ secrets.DB_PASSWORD }}' >> .env
+          echo 'DB_PORT=${{ secrets.DB_PORT }}' >> .env
       - name: Build the Docker image
-        env:
-          ALGORITHM: ${{secrets.ALGORITHM}}
-          SECRET_KEY: ${{secrets.SECRET_KEY}}
-          DB_ENDPOINT: ${{secrets.DB_ENDPOINT}}
-          DB_NAME: ${{secrets.DB_NAME}}
-          DB_USER: ${{secrets.DB_USER}}
-          DB_PASSWORD: ${{secrets.DB_PASSWORD}}
-          DB_PORT: ${{secrets.DB_PORT}}
         run: docker build -t pschuang/formrrito-cicd-pipeline .
       - name: Push to Dockerhub
         run: docker push pschuang/formrrito-cicd-pipeline
