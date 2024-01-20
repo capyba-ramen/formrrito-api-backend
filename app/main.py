@@ -80,10 +80,8 @@ app.add_middleware(
 
 @app.get("/hi")
 def root():
-    result = resource["greeting"]
-    return {
-        "message": result
-    }
+    # result = resource["greeting"]
+    return "Hello World"
 
 
 # Dependency

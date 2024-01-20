@@ -3,11 +3,12 @@ from typing import List
 from sqlalchemy.orm import Session
 
 from app.models import Option
+from . import schemas
 
 
 def create_options(
         question_id: str,
-        options: List[str],
+        options: List[schemas.OptionIn],
         db: Session
 ):
     for option in options:
@@ -26,6 +27,16 @@ def get_option_by_id(
     return db.query(Option).filter(
         Option.id == option_id
     ).first()
+
+
+def get_options_by_question_id(
+        question_id: str,
+        db: Session
+):
+    return db.query(Option).filter(
+        Option.question_id == question_id
+    ).all()
+
 
 
 def update_option(

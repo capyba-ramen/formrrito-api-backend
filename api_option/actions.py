@@ -14,7 +14,7 @@ def create_options(
         user_id: str,
         form_id: str,
         question_id: str,
-        options: List[str],
+        options: List[schemas.OptionIn],
         db: Session
 ):
     # 驗證使用者是否有權限修改表單
@@ -53,116 +53,33 @@ def create_options(
             detail="此問題類型不需要選項"
         )
 
-    result = crud.create_options(
+    # ========== 以下開始分三種情況處理選項的新增/刪除/修改 ==========
+    existing_options = crud.get_options_by_question_id(
         question_id=question_id,
-        options=options,
         db=db
     )
+    existing_option_map = {option.id: option for option in existing_options}
 
-    return result
+    for option in options:
+        # 新增
+        if not option.id:
+            crud.create_options(
+                question_id=question_id,
+                options=options,
+                db=db
+            )
+        # 修改
+        elif option.id in existing_option_map:
+            crud.update_option(
+                option=existing_option_map[option.id],
+                title=option.title
+            )
 
+        # 刪除
+        else:
+            crud.delete_option(
+                option=existing_option_map[option.id],
+                db=db
+            )
 
-@transaction
-def update_option(
-        user_id: str,
-        form_id: str,
-        question_id: str,
-        inputs: schemas.UpdateOptionIn,
-        db: Session
-):
-    # 驗證使用者是否有權限修改表單
-    form = form_crud.get_form_by_id(form_id, db)
-    if form is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="表單不存在"
-        )
-
-    if form.user_id != user_id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="無權限修改表單"
-        )
-
-    question = question_crud.get_question_by_id(
-        question_id=question_id,
-        form_id=form_id,
-        db=db
-    )
-
-    if not question:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="問題不存在"
-        )
-
-    option = crud.get_option_by_id(
-        option_id=inputs.option_id,
-        db=db
-    )
-
-    if not option:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="選項不存在"
-        )
-
-    result = crud.update_option(
-        option=option,
-        title=inputs.title
-    )
-
-    return result
-
-
-@transaction
-def delete_option(
-        user_id: str,
-        form_id: str,
-        question_id: str,
-        option_id: int,
-        db: Session
-):
-    # 驗證使用者是否有權限修改表單
-    form = form_crud.get_form_by_id(form_id, db)
-    if form is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="表單不存在"
-        )
-
-    if form.user_id != user_id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="無權限修改表單"
-        )
-
-    question = question_crud.get_question_by_id(
-        question_id=question_id,
-        form_id=form_id,
-        db=db
-    )
-
-    if not question:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="問題不存在"
-        )
-
-    option = crud.get_option_by_id(
-        option_id=option_id,
-        db=db
-    )
-
-    if not option:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="選項不存在"
-        )
-
-    result = crud.delete_option(
-        option=option,
-        db=db
-    )
-
-    return result
+    return True
