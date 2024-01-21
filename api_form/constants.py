@@ -12,7 +12,7 @@ class QuestionType(enum.IntEnum):
 party_invite = {
     "title": "Party Invite",
     "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed et faucibus lorem.",
-    "image_url": "",
+    "image_url": "1",
     "questions": [
         {
             "title": "What is your name?",
@@ -82,11 +82,10 @@ party_invite = {
     ]
 }
 
-# TODO: 這裡要補上其他表單的資訊
 contact_information = {
     "title": "Contact Information",
     "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed et faucibus lorem.",
-    "image_url": "",
+    "image_url": "2",
     "questions": [
         {
             "title": "Name",
@@ -134,7 +133,7 @@ contact_information = {
 event_registration = {
     "title": "Event Registration",
     "description": "Event Timing: January 5th, 2024\nEvent Address: 123 Y Street Y City, ST 123\nContact us at: 123-456-7890 or mymail@example.com",
-    "image_url": "",
+    "image_url": "3",
     "questions": [
         {
             "title": "Name",
@@ -202,7 +201,7 @@ event_registration = {
 rsvp = {
     "title": "Event RSVP",
     "description": "Event Address: 123 Y Street Y City, ST 123\nContact us at: 123-456-7890 or mymail@example.com",
-    "image_url": "",
+    "image_url": "4",
     "questions": [
         {
             "title": "Can you attend?",
@@ -250,7 +249,7 @@ rsvp = {
 customer_feedback = {
     "title": "Customer Feedback",
     "description": "We would love to hear your feedback on how we can improve your experience.",
-    "image_url": "",
+    "image_url": "5",
     "questions": [
         {
             "title": "Feedback Type",

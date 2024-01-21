@@ -1,3 +1,4 @@
+import random
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -30,6 +31,7 @@ def get_forms(
                 schemas.FormBaseOut(
                     id=form.id,
                     title=form.title if form.title else "",
+                    image_url=form.image_url if form.image_url else "",
                     description=form.description if form.description else "",
                     accepts_reply=form.accepts_reply,
                     created_at=form.created_at,
@@ -73,6 +75,7 @@ def get_form(
     return schemas.FormOut(
         id=form.id,
         title=form.title if form.title else "",
+        image_url=form.image_url if form.image_url else "",
         description=form.description if form.description else "",
         accepts_reply=form.accepts_reply,
         created_at=form.created_at,
@@ -104,7 +107,9 @@ def create_form(
         db: Session
 ):
     result = crud.create_form(
-        user_id=user_id, db=db
+        user_id=user_id,
+        db=db,
+        image_url=str(random.randint(1, 10))
     )
     print(f"Successfully created form (id:{result})")
     return result
@@ -144,7 +149,8 @@ def create_custom_form(
         user_id=user_id,
         db=db,
         title=template_data['title'],
-        description=template_data['description']
+        description=template_data['description'],
+        image_url=template_data['image_url']
     )
 
     # 建立問題

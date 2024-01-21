@@ -55,6 +55,7 @@ def create_form(
         db: Session,
         title: str = None,
         description: str = None,
+        image_url: str = None,
 ):
     form_id = str(uuid.uuid4())
     form = Form(
@@ -65,6 +66,8 @@ def create_form(
         form.title = title
     if description:
         form.description = description
+    if image_url:
+        form.image_url = image_url
     db.add(form)
     return form_id
 
@@ -80,6 +83,8 @@ def update_form(
         form.description = value
     elif field == 'accepts_reply':
         form.accepts_reply = value
+    elif field == 'image_url':
+        form.image_url = value
     return True
 
 

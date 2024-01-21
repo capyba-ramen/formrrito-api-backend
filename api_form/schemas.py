@@ -31,6 +31,7 @@ class QuestionOut(BaseModel):
 class FormBaseOut(BaseModel):
     id: str = Field(..., description="表單代碼")
     title: str = Field(None, description="表單標題")
+    image_url: str = Field(None, description="表單圖片")
     description: str = Field(None, description="表單描述")
     accepts_reply: bool = Field(..., description="表單是否接受回覆")
     created_at: datetime = Field(..., description="表單建立時間")
