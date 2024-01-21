@@ -4,8 +4,8 @@ from pydantic import BaseModel, Field
 
 
 class OptionIn(BaseModel):
-    id: int = Field(..., description="選項代碼")
-    title: str = Field(None, description="選項名稱")
+    id: str = Field(..., description="選項代碼")
+    title: str = Field(..., description="選項名稱")
 
 
 class CreateOptionsIn(BaseModel):

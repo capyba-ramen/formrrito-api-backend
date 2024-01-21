@@ -58,28 +58,39 @@ def create_options(
         question_id=question_id,
         db=db
     )
-    existing_option_map = {option.id: option for option in existing_options}
+    existing_option_map = {str(option.id): option for option in existing_options}
 
     for option in options:
         # 新增
         if not option.id:
+            print(f"新增選項: {option.title}")
             crud.create_options(
                 question_id=question_id,
-                options=options,
+                titles=[option.title],
                 db=db
             )
-        # 修改
+        # 修改 or 不動
         elif option.id in existing_option_map:
-            crud.update_option(
-                option=existing_option_map[option.id],
-                title=option.title
-            )
+            # 修改
+            if option.title != existing_option_map[option.id].title:
+                print(f"修改選項(id: {option.id}):{option.title}")
+                crud.update_option(
+                    option=existing_option_map[option.id],
+                    title=option.title
+                )
+            # 不動
+            else:
+                print(f"不動選項(id: {option.id}):{option.title}")
 
-        # 刪除
-        else:
-            crud.delete_option(
-                option=existing_option_map[option.id],
-                db=db
-            )
+            existing_option_map.pop(option.id)  # 從 map 中移除
+
+    print(f"TO BE DELETED: {existing_option_map}")
+    # 刪除 map 中剩下的選項 (沒有從 body 帶入的表示要刪除)
+    for existing_option in existing_option_map.values():
+        print(f"刪除選項(id: {existing_option.id}):{existing_option.title}")
+        crud.delete_option(
+            option=existing_option,
+            db=db
+        )
 
     return True

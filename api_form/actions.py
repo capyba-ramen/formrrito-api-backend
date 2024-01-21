@@ -108,6 +108,27 @@ def create_form(
 
 
 @transaction
+def create_custom_form(
+        user_id: str,
+        db: Session
+):
+    """
+    建立客製化表單
+    表單有 5 種類型
+    1. party_invite (派對邀請)
+    2. contact_information (聯絡資訊)
+    3. event_registration (活動報名)
+    4. RSVP (回覆邀請)
+    5. customer_feedback (客戶回饋)
+    """
+    result = crud.create_form(
+        user_id=user_id, db=db
+    )
+    print(f"Successfully created form (id:{result})")
+    return result
+
+
+@transaction
 def update_form(
         user_id: str,
         inputs: schemas.UpdateFormIn,
