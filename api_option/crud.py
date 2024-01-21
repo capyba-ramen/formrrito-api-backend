@@ -8,13 +8,13 @@ from . import schemas
 
 def create_options(
         question_id: str,
-        options: List[schemas.OptionIn],
+        titles: List[str],
         db: Session
 ):
-    for option in options:
+    for title in titles:
         db.add(Option(
             question_id=question_id,
-            title=option
+            title=title
         ))
         db.flush()
     return True
@@ -36,7 +36,6 @@ def get_options_by_question_id(
     return db.query(Option).filter(
         Option.question_id == question_id
     ).all()
-
 
 
 def update_option(

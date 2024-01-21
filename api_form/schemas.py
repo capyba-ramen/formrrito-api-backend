@@ -14,7 +14,7 @@ class CreateFormOut(BaseModel):
 
 
 class OptionOut(BaseModel):
-    id: int = Field(..., description="選項代碼")
+    id: str = Field(..., description="選項代碼")
     title: str = Field(..., description="選項標題")
 
 

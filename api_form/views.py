@@ -58,6 +58,24 @@ def create_form(
     )
 
 
+@router.post(
+    "/custom/{template}",
+    response_model=schemas.CreateFormOut,
+    description="新增客製化表單"
+)
+def create_custom_form(
+        user=Depends(auth.get_current_user),
+        db: Session = Depends(get_db)
+):
+    result = actions.create_custom_form(
+        user_id=user.user_id,
+        db=db
+    )
+    return schemas.CreateFormOut(
+        form_id=result
+    )
+
+
 @router.put(
     "/",
     response_model=bool,
