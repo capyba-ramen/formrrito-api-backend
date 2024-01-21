@@ -61,14 +61,25 @@ def create_form(
 @router.post(
     "/custom/{template}",
     response_model=schemas.CreateFormOut,
-    description="新增客製化表單"
+    description="""
+        建立客製化表單:\n
+        表單有 5 種類型\n
+        1. party_invite (派對邀請)
+        2. contact_information (聯絡資訊)
+        3. event_registration (活動報名)
+        4. rsvp (回覆邀請)
+        5. customer_feedback (客戶回饋)
+    """
+
 )
 def create_custom_form(
         user=Depends(auth.get_current_user),
+        template: str = Path(..., title="表單模板類型"),
         db: Session = Depends(get_db)
 ):
     result = actions.create_custom_form(
         user_id=user.user_id,
+        template=template,
         db=db
     )
     return schemas.CreateFormOut(

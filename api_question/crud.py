@@ -21,14 +21,30 @@ def get_questions_by_form_id(form_id: str, db: Session):
 
 def create_question(
         form_id: str,
-        db: Session
+        db: Session,
+        title: str = None,
+        description: str = None,
+        question_type: str = None,
+        is_required: bool = None,
+        order: int = None
 ):
     question_id = str(uuid.uuid4())
     question = Question(
         id=question_id,
-        form_id=form_id,
-        order=0
+        form_id=form_id
     )
+    if title:
+        question.title = title
+    if description:
+        question.description = description
+    if question_type:
+        question.type = question_type
+    if is_required:
+        question.is_required = is_required
+    if order:
+        question.order = order
+    else:
+        question.order = 0
     db.add(question)
     return question_id
 

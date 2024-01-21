@@ -10,72 +10,97 @@ class QuestionType(enum.IntEnum):
 
 
 party_invite = {
-    "title": "派對邀請",
-    "description": "派對邀請",
+    "title": "Party Invite",
+    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed et faucibus lorem.",
+    "image_url": "",
     "questions": [
         {
-            "title": "姓名",
-            "description": "請填寫您的姓名",
+            "title": "What is your name?",
+            "description": "",
             "type": QuestionType.SIMPLE.value,
-            "is_required": True,
+            "is_required": False,
+            "order": 0,
             "options": []
         },
         {
-            "title": "是否參加",
-            "description": "請填寫您是否參加",
+            "title": "Can you attend?",
+            "description": "",
             "type": QuestionType.SINGLE.value,
             "is_required": True,
+            "order": 1,
             "options": [
-                {
-                    "title": "參加"
-                },
-                {
-                    "title": "不參加"
-                }
+                    "Yes, I will be there!",
+                    "Sorry, I can't make it."
             ]
         },
         {
-            "title": "是否攜伴",
-            "description": "請填寫您是否攜伴",
-            "type": QuestionType.SINGLE.value,
-            "is_required": True,
-            "options": [
-                {
-                    "title": "攜伴"
-                },
-                {
-                    "title": "不攜伴"
-                }
-            ]
-        },
-        {
-            "title": "攜伴姓名",
-            "description": "請填寫您攜伴的姓名",
+            "title": "How many of you are attending?",
+            "description": "",
             "type": QuestionType.SIMPLE.value,
             "is_required": False,
+            "order": 2,
             "options": []
         },
         {
-            "title": "攜伴是否參加",
-            "description": "請填寫您攜伴是否參加",
-            "type": QuestionType.SINGLE.value,
+            "title": "What will you be bringing?",
+            "description": "Let us know what kind of dishes you will be bringing to the party.",
+            "type": QuestionType.COMPLEX.value,
             "is_required": False,
+            "order": 3,
             "options": [
-                {
-                    "title": "參加"
-                },
-                {
-                    "title": "不參加"
-                }
+                "Mains",
+                "Salad",
+                "Dessert",
+                "Drinks",
+                "Sides/Appetizers"
             ]
+        },
+        {
+            "title": "Do you have any allergies or dietary restrictions?",
+            "description": "",
+            "type": QuestionType.SIMPLE.value,
+            "is_required": False,
+            "order": 4,
+            "options": []
+        },
+        {
+            "title": "Do you have any questions for us?",
+            "description": "",
+            "type": QuestionType.COMPLEX.value,
+            "is_required": False,
+            "order": 5,
+            "options": []
+        },
+        {
+            "title": "What is your email address?",
+            "description": "",
+            "type": QuestionType.SIMPLE.value,
+            "is_required": False,
+            "order": 6,
+            "options": []
         }
     ]
 }
 
+# TODO: 這裡要補上其他表單的資訊
+contact_information = {}
+event_registration = {}
+rsvp = {}
+customer_feedback = {}
 
-class CustomForm(enum.Enum):
-    PARTY_INVITE = party_invite  # 派對邀請
-    CONTACT_INFORMATION = 1  # 聯絡資訊
-    EVENT_REGISTRATION = 2  # 活動報名
-    RSVP = 3  # 回覆邀請
-    CUSTOMER_FEEDBACK = 4  # 客戶回饋
+
+class CustomForm(str, enum.Enum):
+    PARTY_INVITE = "party_invite"  # 派對邀請
+    CONTACT_INFORMATION = "contact_information"  # 聯絡資訊
+    EVENT_REGISTRATION = "event_registration"  # 活動報名
+    RSVP = 'rsvp'  # 回覆邀請
+    CUSTOMER_FEEDBACK = 'customer_feedback'  # 客戶回饋
+
+
+custom_form_template_map = {
+    CustomForm.PARTY_INVITE.value: party_invite,
+    CustomForm.CONTACT_INFORMATION.value: contact_information,
+    CustomForm.EVENT_REGISTRATION.value: event_registration,
+    CustomForm.RSVP.value: rsvp,
+    CustomForm.CUSTOMER_FEEDBACK.value: customer_feedback
+}

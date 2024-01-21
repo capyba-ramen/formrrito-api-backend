@@ -52,13 +52,19 @@ def get_forms_by_user_with_order_and_size(user_id: str, start: int, size: int, s
 
 def create_form(
         user_id: str,
-        db: Session
+        db: Session,
+        title: str = None,
+        description: str = None,
 ):
     form_id = str(uuid.uuid4())
     form = Form(
         id=form_id,
         user_id=user_id
     )
+    if title:
+        form.title = title
+    if description:
+        form.description = description
     db.add(form)
     return form_id
 
