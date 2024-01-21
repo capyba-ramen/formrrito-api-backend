@@ -24,6 +24,7 @@ class QuestionOut(BaseModel):
     description: str = Field(None, description="題目描述")
     type: int = Field(..., description="題目類型")
     is_required: bool = Field(..., description="題目是否必填")
+    order: int = Field(..., description="題目排序")
     options: List[OptionOut] = Field(None, description="題目選項")
 
 

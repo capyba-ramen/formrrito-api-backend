@@ -37,7 +37,7 @@ class Form(Base):
     created_at = Column(DateTime, default=datetime.datetime.now)
     opened_at = Column(DateTime, default=datetime.datetime.now)
     questions = relationship("Question", cascade="all, delete",
-                             order_by="Question.order.asc(), Question.created_at.asc()")
+                             order_by="Question.created_at.asc(), Question.order.asc()")
 
 
 class Question(Base):

@@ -1,10 +1,12 @@
-from datetime import datetime
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
 from components.db_decorators import transaction
 from components.paginator import paginate_data
 from . import crud, schemas
+from api_question import crud as question_crud
+from api_option import crud as option_crud
+from .constants import CustomForm, custom_form_template_map
 
 
 def get_forms(
@@ -82,6 +84,7 @@ def get_form(
                 description=question.description if question.description else "",
                 type=question.type,
                 is_required=question.is_required,
+                order=question.order,
                 options=[
                     schemas.OptionOut(
                         id=option.id,
@@ -110,22 +113,60 @@ def create_form(
 @transaction
 def create_custom_form(
         user_id: str,
+        template: str,
         db: Session
 ):
     """
     建立客製化表單
     表單有 5 種類型
-    1. party_invite (派對邀請)
-    2. contact_information (聯絡資訊)
-    3. event_registration (活動報名)
+    1. PARTY_INVITE (派對邀請)
+    2. CONTACT_INFORMATION (聯絡資訊)
+    3. EVENT_REGISTRATION (活動報名)
     4. RSVP (回覆邀請)
-    5. customer_feedback (客戶回饋)
+    5. CUSTOMER_FEEDBACK (客戶回饋)
     """
-    result = crud.create_form(
-        user_id=user_id, db=db
+
+    if template not in [
+        CustomForm.PARTY_INVITE.value,
+        CustomForm.CONTACT_INFORMATION.value,
+        CustomForm.EVENT_REGISTRATION.value,
+        CustomForm.RSVP.value,
+        CustomForm.CUSTOMER_FEEDBACK.value
+    ]:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="表單模板類型不存在"
+        )
+
+    template_data = custom_form_template_map[template]
+    # 建立表單
+    form_id = crud.create_form(
+        user_id=user_id,
+        db=db,
+        title=template_data['title'],
+        description=template_data['description']
     )
-    print(f"Successfully created form (id:{result})")
-    return result
+
+    # 建立問題
+    for question in template_data['questions']:
+        question_id = question_crud.create_question(
+            form_id=form_id,
+            db=db,
+            title=question['title'],
+            description=question['description'],
+            question_type=question['type'],
+            is_required=question['is_required'],
+            order=question['order']
+        )
+
+        # 建立選項
+        option_crud.create_options(
+            question_id=question_id,
+            db=db,
+            titles=question['options']
+        )
+
+    return form_id
 
 
 @transaction
