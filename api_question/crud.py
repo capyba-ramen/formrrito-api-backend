@@ -1,7 +1,7 @@
 import uuid
 from typing import List
 
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.models import Question
 from . import schemas
@@ -17,6 +17,12 @@ def get_question_by_id(question_id: str, form_id: str, db: Session):
 
 def get_questions_by_form_id(form_id: str, db: Session):
     return db.query(Question).filter(Question.form_id == form_id).all()
+
+
+def get_questions_with_options_by_form_id(form_id: str, db: Session):
+    return db.query(Question).options(
+        joinedload(Question.options)
+    ).filter(Question.form_id == form_id).all()
 
 
 def create_question(

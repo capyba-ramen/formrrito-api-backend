@@ -82,7 +82,7 @@ def create_options(
             else:
                 print(f"不動選項(id: {option.id}):{option.title}")
 
-            existing_option_map.pop(option.id)  # 從 map 中移除
+            existing_option_map.pop(option.id, None)  # 從 map 中移除
 
     print(f"TO BE DELETED: {existing_option_map}")
     # 刪除 map 中剩下的選項 (沒有從 body 帶入的表示要刪除)
