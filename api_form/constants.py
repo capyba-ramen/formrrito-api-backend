@@ -44,7 +44,7 @@ party_invite = {
         {
             "title": "What will you be bringing?",
             "description": "Let us know what kind of dishes you will be bringing to the party.",
-            "type": QuestionType.COMPLEX.value,
+            "type": QuestionType.MULTIPLE.value,
             "is_required": False,
             "order": 3,
             "options": [
