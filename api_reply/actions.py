@@ -66,7 +66,7 @@ def reply(
 
     if not form.accepts_reply:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_403_FORBIDDEN,
             detail="表單不接受回覆"
         )
 
@@ -158,8 +158,8 @@ def reply(
     # TODO: 處理必填未填的問題
     if is_required_question_id_map:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"必填問題未填<question_ids={list(is_required_question_id_map.keys())}>"
+            status_code=status.HTTP_418_IM_A_TEAPOT,
+            detail=f"{list(is_required_question_id_map.keys())[0]}"
         )
     return True
 

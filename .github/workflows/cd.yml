@@ -23,4 +23,4 @@ jobs:
       - name: Delete the old docker container
         run: docker rm -f formrrito-cicd-pipeline-container || true
       - name: Run docker container
-        run: docker run -d --name formrrito-cicd-pipeline-container -p 80:8000 pschuang/formrrito-cicd-pipeline
+        run: docker run -d --name formrrito-cicd-pipeline-container -p 8000:8000 pschuang/formrrito-cicd-pipeline
