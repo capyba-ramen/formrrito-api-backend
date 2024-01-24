@@ -1,10 +1,9 @@
-from fastapi import APIRouter, Depends, Query, Body, Path
+from fastapi import APIRouter, Depends, Body, Path
 from sqlalchemy.orm import Session
 
-from app import auth
+from api_form import schemas as form_schemas
 from app.main import get_db
 from . import actions, schemas
-from api_form import schemas as form_schemas
 
 router = APIRouter()
 
@@ -49,5 +48,5 @@ def get_statistics(
         form_id: str = Path(..., title="表單代碼"),
         db: Session = Depends(get_db)
 ):
-    result = actions.get_form(form_id=form_id, db=db)
+    result = actions.get_statistics(form_id=form_id, db=db)
     return result

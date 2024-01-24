@@ -1,12 +1,13 @@
 from typing import List, Union
+
 from pydantic import BaseModel, Field
 
 
 class SingleReply(BaseModel):
     question_id: str = Field(..., description="問題代碼")
     question_type: int = Field(..., description="問題類型")
-    option_id: str = Field(None, description="選項代碼(選擇的選項的 id, 如是簡答題或詳答題則 null)")
-    option_title: str = Field(None, description="選項名稱(選擇的選項的名稱, 如是簡答題或詳答題則 null)")
+    option_ids: List[str] = Field(None, description="選項代碼列表(選擇的選項的 id, 如是簡答題或詳答題則 null)")
+    option_titles: List[str] = Field(None, description="選項名稱列表(選擇的選項的名稱, 如是簡答題或詳答題則 null)")
     answer: str = Field(None, description="回答內容(簡答題或詳答題才有)")
 
 
