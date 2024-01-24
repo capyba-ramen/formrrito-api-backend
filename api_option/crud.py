@@ -3,7 +3,6 @@ from typing import List
 from sqlalchemy.orm import Session
 
 from app.models import Option
-from . import schemas
 
 
 def create_options(
@@ -14,7 +13,7 @@ def create_options(
     for title in titles:
         db.add(Option(
             question_id=question_id,
-            title=title
+            title=title.replace(',', '|')  # 避免 reply 表格中 response 為多筆的情況下，取回以 ',' split 時發生問題
         ))
         db.flush()
     return True

@@ -1,12 +1,13 @@
 import uuid
+
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
-from components.db_decorators import transaction
 
-from . import schemas, crud
 from api_form import crud as form_crud, schemas as form_schemas
 from api_form.constants import QuestionType
 from api_question import crud as question_crud
+from components.db_decorators import transaction
+from . import schemas, crud
 
 
 def get_form(
@@ -122,26 +123,26 @@ def reply(
             QuestionType.MULTIPLE.value,
             QuestionType.DROP_DOWN.value,
         ]:
-            if not single_reply.option_id:
+            if not single_reply.option_ids:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=f"選項未填<option_id={single_reply.option_id}>"
+                    detail=f"選項未填<question_id={single_reply.question_id}>"
                 )
 
-            if int(single_reply.option_id) not in [
-                option.id for option in question_replied_to.options
-            ]:
+            if set(single_reply.option_ids) - set([
+                str(option.id) for option in question_replied_to.options
+            ]):
                 raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND,
-                    detail=f"選項不存在<option_id={single_reply.option_id}>"
+                    detail=f"選項不存在<option_ids={single_reply.option_ids}>"
                 )
 
             crud.create_reply(
                 individual_id=individual_id,
                 question_id=question_replied_to.id,
-                response=single_reply.option_title,
+                response=",".join(single_reply.option_titles),
                 db=db,
-                option_id=single_reply.option_id,
+                option_id=",".join(single_reply.option_ids)
             )
             # 移除必填問題
             is_required_question_id_map.pop(question_replied_to.id, None)
@@ -155,7 +156,7 @@ def reply(
                 detail=f"問題類型錯誤<question_id:{single_reply.question_id}, question_type={single_reply.question_type}>"
             )
 
-    # TODO: 處理必填未填的問題
+    # 處理必填未填的問題
     if is_required_question_id_map:
         raise HTTPException(
             status_code=status.HTTP_418_IM_A_TEAPOT,
@@ -168,4 +169,12 @@ def get_statistics(
         form_id: str,
         db: Session
 ):
+    # 驗證表單是否存在
+    form = form_crud.get_form_by_id(form_id, db)
+    if form is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="表單不存在"
+        )
+    
     pass
