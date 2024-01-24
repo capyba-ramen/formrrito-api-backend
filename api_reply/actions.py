@@ -176,5 +176,6 @@ def get_statistics(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="表單不存在"
         )
+
+    questions = question_crud.get_questions_with_options_by_form_id(form_id, db)
     
-    pass
