@@ -38,4 +38,5 @@ class QuestionStatisticChoiceOut(QuestionStatisticBaseOut):
 class StatisticsOut(BaseModel):
     total: int = Field(..., description="總回覆數")
     accepts_reply: bool = Field(..., description="是否接受回覆")
-    questions: List[Union[QuestionStatisticTextOut, QuestionStatisticChoiceOut]] = Field(..., description="問題列表")
+    question_stats: List[Union[QuestionStatisticTextOut, QuestionStatisticChoiceOut]] = Field(...,
+                                                                                              description="問題列表")

@@ -176,5 +176,81 @@ def get_statistics(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="表單不存在"
         )
-    
-    pass
+
+    questions = question_crud.get_questions_by_form_id(form_id, db)
+    question_ids = [question.id for question in questions]
+    question_map = {question.id: question for question in questions}
+
+    replies = crud.get_replies_by_question_ids(question_ids, db)
+
+    question_statistics_map = {}
+
+    for single_reply in replies:
+        if question_map.get(single_reply.question_id).type in [
+            QuestionType.SIMPLE.value,
+            QuestionType.COMPLEX.value
+        ]:
+
+            if single_reply.question_id not in question_statistics_map:
+                question_statistics_map[single_reply.question_id] = schemas.QuestionStatisticTextOut(
+                    title=question_map.get(single_reply.question_id).title,
+                    count=0,
+                    type=question_map.get(single_reply.question_id).type,
+                    is_required=question_map.get(single_reply.question_id).is_required,
+                    responses=[]
+                )
+            question_statistics_map[single_reply.question_id].count += 1
+            question_statistics_map[single_reply.question_id].responses.append(single_reply.response)
+
+        elif question_map.get(single_reply.question_id).type in [
+            QuestionType.SINGLE.value,
+            QuestionType.MULTIPLE.value,
+            QuestionType.DROP_DOWN.value,
+        ]:
+            if single_reply.question_id not in question_statistics_map:
+                question_statistics_map[single_reply.question_id] = {
+                    "title": question_map.get(single_reply.question_id).title,
+                    "count": 0,
+                    "type": question_map.get(single_reply.question_id).type,
+                    "is_required": question_map.get(single_reply.question_id).is_required,
+                    "options": {}
+                }
+            question_statistics_map[single_reply.question_id]["count"] += 1
+            option_titles = single_reply.response.split(",")
+            for option_title in option_titles:
+                if option_title not in question_statistics_map[single_reply.question_id]["options"]:
+                    question_statistics_map[single_reply.question_id]["options"][option_title] = 0
+                question_statistics_map[single_reply.question_id]["options"][option_title] += 1
+
+    question_stats = []
+    for question_id in question_ids:
+        if question_map.get(question_id).type in [
+            QuestionType.SIMPLE.value,
+            QuestionType.COMPLEX.value
+        ]:
+            question_stats.append(question_statistics_map[question_id])
+        elif question_map.get(question_id).type in [
+            QuestionType.SINGLE.value,
+            QuestionType.MULTIPLE.value,
+            QuestionType.DROP_DOWN.value,
+        ]:
+            question_stats.append(
+                schemas.QuestionStatisticChoiceOut(
+                    title=question_statistics_map[question_id]["title"],
+                    count=question_statistics_map[question_id]["count"],
+                    type=question_statistics_map[question_id]["type"],
+                    is_required=question_statistics_map[question_id]["is_required"],
+                    options=[
+                        schemas.OptionStatisticOut(
+                            title=option_title,
+                            count=question_statistics_map[question_id]["options"][option_title]
+                        )
+                        for option_title in question_statistics_map[question_id]["options"]
+                    ]
+                )
+            )
+    return schemas.StatisticsOut(
+        total=len(replies),
+        accepts_reply=form.accepts_reply,
+        question_stats=question_stats
+    )

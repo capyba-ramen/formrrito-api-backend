@@ -1,5 +1,8 @@
-from app.models import Reply
+from typing import List
+
 from sqlalchemy.orm import Session
+
+from app.models import Reply
 
 
 def create_reply(
@@ -18,3 +21,12 @@ def create_reply(
         reply.option_id = option_id
     db.add(reply)
     return True
+
+
+def get_replies_by_question_ids(
+        question_ids: List[str],
+        db: Session
+):
+    return db.query(Reply).filter(
+        Reply.question_id.in_(question_ids)
+    ).all()
