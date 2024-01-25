@@ -10,7 +10,7 @@ router = APIRouter()
 
 @router.post(
     "/order",
-    # response_model=bool,
+    response_model=bool,
     description="調整問題順序"
 )
 def change_order(
@@ -48,7 +48,7 @@ def create_question(
 
 @router.put(
     "/",
-    response_model=bool,
+    response_model=int,  #
     description="編輯單筆問題"
 )
 def update_question(
