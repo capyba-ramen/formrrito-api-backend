@@ -79,8 +79,8 @@ def get_form(
         image_url=form.image_url if form.image_url else "",
         description=form.description if form.description else "",
         accepts_reply=form.accepts_reply,
-        created_at=form.created_at,
-        opened_at=form.opened_at,
+        created_at=form.created_at.strftime('%Y-%m-%dT%H:%M:%SZ'),
+        opened_at=form.opened_at.strftime('%Y-%m-%dT%H:%M:%SZ'),
         questions=[
             schemas.QuestionOut(
                 id=question.id,
