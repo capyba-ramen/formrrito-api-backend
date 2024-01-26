@@ -1,11 +1,10 @@
 import uuid
-from typing import Any
 from datetime import datetime
+from typing import Any
 
 from sqlalchemy.orm import Session, joinedload
 
 from app.models import Form, Question
-from components.paginator import paginate_data
 from components.db_decorators import transaction
 
 
@@ -24,14 +23,13 @@ def get_form_detail_by_id(form_id: str, db: Session):
 
 
 def get_forms_by_user_query(user_id: str, db: Session):
-
     return db.query(Form).filter(
         Form.user_id == user_id
     )
 
 
 def get_forms_by_user_with_order_and_size(user_id: str, start: int, size: int, sort, db: Session):
-    order = Form.opened_at.asc() if sort == 'ASC' else Form.opened_at.desc()
+    order = Form.opened_at.asc() if sort == 'asc' else Form.opened_at.desc()
 
     form_query = db.query(Form).filter(
         Form.user_id == user_id
