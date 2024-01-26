@@ -22,7 +22,7 @@ class User(Base):
     username = Column(String(50))
     email = Column(String(100), unique=True)
     hashed_password = Column(String(100))
-    created_at = Column(DateTime, nullable=True, default=datetime.datetime.now)
+    created_at = Column(DateTime, nullable=True, default=datetime.datetime.utcnow)
 
 
 class Form(Base):
@@ -34,8 +34,8 @@ class Form(Base):
     description = Column(String(150), comment="表單描述")
     image_url = Column(String(150), comment="圖片網址")
     accepts_reply = Column(Boolean, default=True, comment="是否接受回覆")
-    created_at = Column(DateTime, default=datetime.datetime.now)
-    opened_at = Column(DateTime, default=datetime.datetime.now)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    opened_at = Column(DateTime, default=datetime.datetime.utcnow)
     questions = relationship("Question", cascade="all, delete",
                              order_by="Question.order.desc(), Question.created_at.asc()")
 
@@ -51,7 +51,7 @@ class Question(Base):
     is_required = Column(Boolean, default=False, comment="是否為必填")
     image_url = Column(String(150), comment="圖片網址")
     order = Column(Integer, nullable=False, comment="問題順序(排序用)")
-    created_at = Column(DateTime, default=datetime.datetime.now)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
     options = relationship("Option", cascade="all, delete", order_by="Option.id")
 
 
@@ -61,7 +61,7 @@ class Option(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     question_id = Column(String(40), ForeignKey("question.id"))
     title = Column(String(50), comment="選項名稱")
-    created_at = Column(DateTime, nullable=True, default=datetime.datetime.now)
+    created_at = Column(DateTime, nullable=True, default=datetime.datetime.utcnow)
 
 
 class Reply(Base):
@@ -72,4 +72,4 @@ class Reply(Base):
     question_id = Column(String(40), ForeignKey("question.id"), nullable=False)
     option_id = Column(String(500), comment="問題是選擇題時才有值")
     response = Column(String(500), comment="回覆(簡答/詳答的答案 & 選擇題的選項)")
-    created_at = Column(DateTime, default=datetime.datetime.now)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)

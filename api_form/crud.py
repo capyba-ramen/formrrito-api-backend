@@ -91,7 +91,7 @@ def update_form_opened_at(
         form: Form,
         db: Session
 ):
-    form.opened_at = datetime.now()
+    form.opened_at = datetime.utcnow()
     return form
 
 

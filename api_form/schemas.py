@@ -1,6 +1,6 @@
 from typing import List, Any
+
 from pydantic import BaseModel, Field
-from datetime import datetime
 
 
 class UpdateFormIn(BaseModel):
@@ -34,10 +34,9 @@ class FormBaseOut(BaseModel):
     image_url: str = Field(None, description="表單圖片")
     description: str = Field(None, description="表單描述")
     accepts_reply: bool = Field(..., description="表單是否接受回覆")
-    created_at: datetime = Field(..., description="表單建立時間")
-    opened_at: datetime = Field(..., description="表單開放時間")
+    created_at: str = Field(..., description="表單建立時間")
+    opened_at: str = Field(..., description="表單開放時間")
 
 
 class FormOut(FormBaseOut):
     questions: List[QuestionOut] = Field(None, description="表單題目")
-
