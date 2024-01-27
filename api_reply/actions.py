@@ -105,6 +105,10 @@ def reply(
                     detail=f"{question_replied_to.title}"
                 )
 
+            # 問題不是必填但沒有給答案
+            if not single_reply.answer:
+                continue
+
             crud.create_reply(
                 individual_id=individual_id,
                 question_id=question_replied_to.id,
@@ -124,6 +128,10 @@ def reply(
                     status_code=status.HTTP_418_IM_A_TEAPOT,
                     detail=f"{question_replied_to.title}"
                 )
+
+            # 問題不是必填但沒有給選項
+            if not single_reply.option_titles:
+                continue
 
             if set(single_reply.option_ids) - set([
                 str(option.id) for option in question_replied_to.options
