@@ -16,7 +16,7 @@ class ReplyIn(BaseModel):
 
 
 class QuestionStatisticBaseOut(BaseModel):
-    title: str = Field('', description="問題標題")
+    title: str = Field(..., description="問題標題")
     count: int = Field(..., description="回覆數")
     type: int = Field(..., description="問題種類(決定圖表類型)")
     is_required: bool = Field(..., description="是否必填")
