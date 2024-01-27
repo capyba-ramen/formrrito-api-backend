@@ -209,11 +209,17 @@ def get_statistics(
 
     question_stats = []
     for question_id in question_ids:
+        # 判斷此問題有沒有被回答到
+        question_stat = question_statistics_map.get(question_id)
+        if not question_stat:
+            continue
+
         if question_map.get(question_id).type in [
             QuestionType.SIMPLE.value,
             QuestionType.COMPLEX.value
         ]:
-            question_stats.append(question_statistics_map[question_id])
+            question_stats.append(question_stat)
+
         elif question_map.get(question_id).type in [
             QuestionType.SINGLE.value,
             QuestionType.MULTIPLE.value,
@@ -221,16 +227,16 @@ def get_statistics(
         ]:
             question_stats.append(
                 schemas.QuestionStatisticChoiceOut(
-                    title=question_statistics_map[question_id]["title"],
-                    count=question_statistics_map[question_id]["count"],
-                    type=question_statistics_map[question_id]["type"],
-                    is_required=question_statistics_map[question_id]["is_required"],
+                    title=question_stat["title"],
+                    count=question_stat["count"],
+                    type=question_stat["type"],
+                    is_required=question_stat["is_required"],
                     options=[
                         schemas.OptionStatisticOut(
                             title=option_title,
-                            count=question_statistics_map[question_id]["options"][option_title]
+                            count=question_stat["options"][option_title]
                         )
-                        for option_title in question_statistics_map[question_id]["options"]
+                        for option_title in question_stat["options"]
                     ]
                 )
             )
