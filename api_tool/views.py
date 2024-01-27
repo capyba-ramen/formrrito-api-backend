@@ -8,7 +8,7 @@ router = APIRouter()
 
 
 @router.get(
-    '/{shortened_url}',
+    '/shortened_url/{shortened_url}',
     description='取得原始網址'
 )
 def get_original_url(
