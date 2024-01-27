@@ -8,25 +8,25 @@ from components.string_utils import b58_hash_time
 def get_shortened_url_by_link(
         link: str,
         db: Session
-) -> str:
+) -> ShortenedUrl:
     """
     依照 url 取得短網址
     """
     return db.query(ShortenedUrl).filter(
         ShortenedUrl.link == link
-    ).first().key
+    ).first()
 
 
 def get_original_url(
         shortened_url: str,
         db: Session
-) -> str:
+) -> ShortenedUrl:
     """
     依照短網址取得原始網址
     """
     return db.query(ShortenedUrl).filter(
         ShortenedUrl.key == shortened_url
-    ).first().link
+    ).first()
 
 
 @transaction
