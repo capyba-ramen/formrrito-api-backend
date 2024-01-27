@@ -1,6 +1,9 @@
+from typing import Union
+
 from fastapi import APIRouter, Depends, Path, Body
 from sqlalchemy.orm import Session
 
+from api_form.schemas import OptionOut
 from app import auth
 from app.main import get_db
 from . import actions, schemas
@@ -48,7 +51,7 @@ def create_question(
 
 @router.put(
     "/",
-    response_model=int,  #
+    response_model=Union[OptionOut, None],  #
     description="編輯單筆問題"
 )
 def update_question(

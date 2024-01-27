@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 
 from api_form import crud as form_crud
 from api_form.constants import QuestionType
+from api_form.schemas import OptionOut
 from api_option import crud as option_crud
 from components.db_decorators import transaction
 from . import crud, schemas
@@ -81,7 +82,6 @@ def update_question(
             detail="問題類型錯誤"
         )
 
-    result = 0  # 如果沒有新增選項回 0，有則是 option_id
     # 如果問題是選擇題且要把問題類型改成其他類型，則刪除所有選項
     if question.type in [
         QuestionType.SINGLE.value,
@@ -102,6 +102,8 @@ def update_question(
                 option=option,
                 db=db
             )
+            return
+
     elif question.type in [
         QuestionType.SIMPLE.value,
         QuestionType.COMPLEX.value
@@ -115,14 +117,16 @@ def update_question(
             titles=["option 1"],
             db=db
         )
-        result = question.options[0].id
 
     # 先處理好選項再改問題類型
     crud.update_question(
         question=question,
         fields=inputs,
     )
-    return result
+    return OptionOut(
+        id=question.options[0].id,
+        title=question.options[0].title
+    )
 
 
 @transaction
