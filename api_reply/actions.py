@@ -75,12 +75,6 @@ def reply(
 
     questions_map = {question.id: question for question in questions}
 
-    is_required_question_id_map = {
-        question.id: 1
-        for question in questions if question.is_required
-    }
-    print(is_required_question_id_map)
-
     individual_id = str(uuid.uuid4())
 
     for single_reply in reply_content.replies:
@@ -104,18 +98,19 @@ def reply(
             QuestionType.SIMPLE.value,
             QuestionType.COMPLEX.value
         ]:
-
-            if single_reply.answer:
-                crud.create_reply(
-                    individual_id=individual_id,
-                    question_id=question_replied_to.id,
-                    response=single_reply.answer,
-                    db=db,
+            # 問題必填但未提供答案
+            if question_replied_to.is_required and not single_reply.answer:
+                raise HTTPException(
+                    status_code=status.HTTP_418_IM_A_TEAPOT,
+                    detail=f"{question_replied_to.title}"
                 )
-                # 移除必填問題
-                print("答覆簡答")
-                is_required_question_id_map.pop(question_replied_to.id, None)
-                print("移除必填問題", is_required_question_id_map)
+
+            crud.create_reply(
+                individual_id=individual_id,
+                question_id=question_replied_to.id,
+                response=single_reply.answer,
+                db=db,
+            )
 
         # 單選題、多選題、下拉題
         elif question_replied_to.type in [
@@ -123,10 +118,11 @@ def reply(
             QuestionType.MULTIPLE.value,
             QuestionType.DROP_DOWN.value,
         ]:
-            if not single_reply.option_ids:
+            # 問題必填但未提供選項
+            if question_replied_to.is_required and not single_reply.option_titles:
                 raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=f"選項未填<question_id={single_reply.question_id}>"
+                    status_code=status.HTTP_418_IM_A_TEAPOT,
+                    detail=f"{question_replied_to.title}"
                 )
 
             if set(single_reply.option_ids) - set([
@@ -144,11 +140,6 @@ def reply(
                 db=db,
                 option_id=",".join(single_reply.option_ids)
             )
-            # 移除必填問題
-            is_required_question_id_map.pop(question_replied_to.id, None)
-            print("答覆選擇題")
-            print("移除必填問題", is_required_question_id_map)
-            print(is_required_question_id_map)
 
         else:
             raise HTTPException(
@@ -156,12 +147,6 @@ def reply(
                 detail=f"問題類型錯誤<question_id:{single_reply.question_id}, question_type={single_reply.question_type}>"
             )
 
-    # 處理必填未填的問題
-    if is_required_question_id_map:
-        raise HTTPException(
-            status_code=status.HTTP_418_IM_A_TEAPOT,
-            detail=f"{list(is_required_question_id_map.keys())[0]}"
-        )
     return True
 
 
