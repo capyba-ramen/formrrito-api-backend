@@ -178,7 +178,8 @@ def get_statistics(
 
             if single_reply.question_id not in question_statistics_map:
                 question_statistics_map[single_reply.question_id] = schemas.QuestionStatisticTextOut(
-                    title=question_map.get(single_reply.question_id).title,
+                    title=question_map.get(single_reply.question_id).title if question_map.get(
+                        single_reply.question_id).title else "",
                     count=0,
                     type=question_map.get(single_reply.question_id).type,
                     is_required=question_map.get(single_reply.question_id).is_required,
@@ -194,7 +195,8 @@ def get_statistics(
         ]:
             if single_reply.question_id not in question_statistics_map:
                 question_statistics_map[single_reply.question_id] = {
-                    "title": question_map.get(single_reply.question_id).title,
+                    "title": question_map.get(single_reply.question_id).title if question_map.get(
+                        single_reply.question_id).title else "",
                     "count": 0,
                     "type": question_map.get(single_reply.question_id).type,
                     "is_required": question_map.get(single_reply.question_id).is_required,
