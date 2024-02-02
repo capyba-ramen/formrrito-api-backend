@@ -18,4 +18,10 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     ".localhost"
 ]
+
 ACCESS_TOKEN_EXPIRE_MINUTES = 720
+
+# ==== email service ====
+EMAIL_HOST = os.getenv('EMAIL_HOST')
+SERVICE_EMAIL = os.getenv('SERVICE_EMAIL')
+SERVICE_EMAIL_PASSWORD = os.getenv('SERVICE_EMAIL_PASSWORD')

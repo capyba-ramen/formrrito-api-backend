@@ -36,3 +36,18 @@ def get_shortened_url(
         db=db
     )
     return result
+
+
+@router.post(
+    "/email",
+    description="寄送email(測試用)",
+    response_model=bool,
+    include_in_schema=False
+)
+def dev_send_email(
+        inputs: schemas.EmailIn = Body(..., description='email內容')
+):
+    result = actions.dev_send_email(
+        inputs=inputs
+    )
+    return result
