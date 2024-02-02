@@ -102,7 +102,14 @@ def update_question(
                 option=option,
                 db=db
             )
-            return
+
+        # 先處理好選項再改問題類型
+        crud.update_question(
+            question=question,
+            fields=inputs,
+        )
+
+        return None
 
     elif question.type in [
         QuestionType.SIMPLE.value,
@@ -118,15 +125,16 @@ def update_question(
             db=db
         )
 
-    # 先處理好選項再改問題類型
-    crud.update_question(
-        question=question,
-        fields=inputs,
-    )
-    return OptionOut(
-        id=question.options[0].id,
-        title=question.options[0].title
-    )
+        # 先處理好選項再改問題類型
+        crud.update_question(
+            question=question,
+            fields=inputs,
+        )
+
+        return OptionOut(
+            id=question.options[0].id,
+            title=question.options[0].title
+        )
 
 
 @transaction

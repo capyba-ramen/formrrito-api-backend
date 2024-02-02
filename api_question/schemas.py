@@ -12,7 +12,7 @@ class UpdateQuestionIn(BaseModel):
     question_id: str = Field(..., description="問題代碼")
     title: str = Field(None, description="問題名稱")
     description: str = Field(None, description="問題描述")
-    type: int = Field(None, description="問題類型")
+    type: int = Field(..., description="問題類型")
     is_required: bool = Field(None, description="問題是否必填")
 
 

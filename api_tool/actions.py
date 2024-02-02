@@ -1,7 +1,9 @@
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
+from components.email import send_email
 from . import crud
+from .schemas import EmailIn
 
 
 def get_original_url(
@@ -35,3 +37,14 @@ def get_shortened_url(
         db=db
     )
     return shortened_url
+
+
+def dev_send_email(
+        inputs: EmailIn
+) -> bool:
+    send_email(
+        subject=inputs.subject,
+        to=inputs.to
+    )
+
+    return True

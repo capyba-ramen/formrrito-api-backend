@@ -23,6 +23,7 @@ class User(Base):
     email = Column(String(100), unique=True)
     hashed_password = Column(String(100))
     created_at = Column(DateTime, nullable=True, default=datetime.datetime.utcnow)
+    forms = relationship("Form", back_populates="user")
 
 
 class Form(Base):
@@ -38,6 +39,7 @@ class Form(Base):
     opened_at = Column(DateTime, default=datetime.datetime.utcnow)
     questions = relationship("Question", cascade="all, delete",
                              order_by="Question.order.desc(), Question.created_at.asc()")
+    user = relationship("User", back_populates="forms")
 
 
 class Question(Base):
