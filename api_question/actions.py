@@ -136,6 +136,15 @@ def update_question(
             title=question.options[0].title
         )
 
+    else:
+        # 問題類型沒有改變，則修改其他問題欄位
+        crud.update_question(
+            question=question,
+            fields=inputs,
+        )
+
+        return None
+
 
 @transaction
 def delete_question(

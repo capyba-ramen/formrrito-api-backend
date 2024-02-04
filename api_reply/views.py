@@ -3,7 +3,8 @@ from sqlalchemy.orm import Session
 
 from api_form import schemas as form_schemas
 from app.main import get_db
-from components.email import send_email
+from components.email import send_email, render_template
+from environmemt import WEB_URL
 from . import actions, schemas
 
 router = APIRouter()
@@ -33,7 +34,7 @@ def reply(
         reply_content: schemas.ReplyIn = Body(..., description="回覆內容"),
         db: Session = Depends(get_db)
 ):
-    result, form_owner_email = actions.reply(
+    result, form_title, form_owner_email = actions.reply(
         form_id=form_id,
         reply_content=reply_content,
         db=db
@@ -41,10 +42,16 @@ def reply(
 
     # 如果成功，就寄信給表單所有者
     if result:
+        data = {
+            "form": form_title,
+            "form_link": f"http://{WEB_URL}/form/{form_id}#responses"
+        }
+        html = render_template('default.j2', data=data)
         background_tasks.add_task(
             send_email,
-            subject="有人回覆了您的表單",
-            to=form_owner_email
+            subject="Hi, Someone replied to your form!",
+            to=form_owner_email,
+            body=html
         )
 
     return result
