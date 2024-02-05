@@ -29,12 +29,93 @@ def create_question(
             detail="無權限修改表單"
         )
 
-    result = crud.create_question(
+    result, _ = crud.create_question(
         form_id=form_id,
         db=db
     )
 
     return result
+
+
+@transaction
+def duplicate_question(
+        user_id: str,
+        form_id: str,
+        question_id: str,
+        db: Session
+):
+    # 驗證使用者是否有權限修改表單
+    form = form_crud.get_form_by_id(form_id, db)
+    if form is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="表單不存在"
+        )
+
+    if form.user_id != user_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="無權限修改表單"
+        )
+
+    # 找出要複製的問題
+    questions = crud.get_questions_by_form_id(
+        form_id=form_id,
+        db=db
+    )
+
+    question_map = {question.id: question for question in questions}
+
+    if question_id not in question_map:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="問題不存在"
+        )
+
+    new_added_question_id, new_added_question = crud.create_question(
+        form_id=form_id,
+        title=question_map[question_id].title,
+        description=question_map[question_id].description,
+        question_type=question_map[question_id].type,
+        is_required=question_map[question_id].is_required,
+        db=db
+    )
+
+    if question_map[question_id].type in [
+        QuestionType.SINGLE.value,
+        QuestionType.MULTIPLE.value,
+        QuestionType.DROP_DOWN.value,
+    ]:
+        # 找出要複製的選項
+        options = option_crud.get_options_by_question_id(
+            question_id=question_id,
+            db=db
+        )
+
+        option_crud.create_options(
+            question_id=new_added_question_id,
+            titles=[option.title for option in options],
+            db=db
+        )
+
+    # 複製問題成功，變更問題順序 (將複製的問題放在原問題的下一個位置)
+    question_ids_in_order = [question.id for question in questions]
+    index = question_ids_in_order.index(question_id)
+    question_ids_in_order.insert(index + 1, new_added_question_id)
+    new_questions = []
+    for question in questions:
+        if question.id == question_id:
+            new_questions.append(question)
+            new_questions.append(new_added_question)
+        else:
+            new_questions.append(question)
+
+    crud.change_order(
+        questions=new_questions,
+        question_order=question_ids_in_order
+    )
+
+    return new_added_question_id
 
 
 @transaction

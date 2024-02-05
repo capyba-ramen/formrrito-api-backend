@@ -49,6 +49,29 @@ def create_question(
     )
 
 
+@router.post(
+    "/{form_id}/{question_id}",
+    # response_model=schemas.CreateQuestionOut,
+    description="複製單筆問題"
+)
+def duplicate_question(
+        user=Depends(auth.get_current_user),
+        form_id: str = Path(..., title="表單編號"),
+        question_id: str = Path(..., title="問題編號"),
+        db: Session = Depends(get_db)
+):
+    result = actions.duplicate_question(
+        user_id=user.user_id,
+        form_id=form_id,
+        question_id=question_id,
+        db=db
+    )
+    return result
+    return schemas.CreateQuestionOut(
+        question_id=result
+    )
+
+
 @router.put(
     "/",
     response_model=Union[OptionOut, None],  #
