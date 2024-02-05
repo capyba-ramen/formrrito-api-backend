@@ -8,11 +8,11 @@ from . import schemas
 
 
 def get_question_by_id(question_id: str, form_id: str, db: Session):
-    form_query = db.query(Question).filter(Question.id == question_id)
+    question_query = db.query(Question).filter(Question.id == question_id)
     if form_id:
-        form_query = form_query.filter(Question.form_id == form_id)
+        question_query = question_query.filter(Question.form_id == form_id)
 
-    return form_query.first()
+    return question_query.first()
 
 
 def get_questions_by_form_id(form_id: str, db: Session):
@@ -56,7 +56,7 @@ def create_question(
     else:
         question.order = 0
     db.add(question)
-    return question_id
+    return question_id, question
 
 
 def update_question(

@@ -156,7 +156,7 @@ def create_custom_form(
 
     # 建立問題
     for question in template_data['questions']:
-        question_id = question_crud.create_question(
+        question_id, _ = question_crud.create_question(
             form_id=form_id,
             db=db,
             title=question['title'],
