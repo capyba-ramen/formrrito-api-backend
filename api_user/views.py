@@ -33,25 +33,16 @@ def create_user(
     """
     create user
     """
-    try:
-        result, user = actions.create_user(
-            inputs=inputs,
-            db=db
-        )
+    result, user = actions.create_user(
+        inputs=inputs,
+        db=db
+    )
 
-        return {
-            "success": result,
-            "data": schemas.UserBaseOut(
-                id=user.id,
-                username=user.username,
-                email=user.email
-            )
-        }
-    except Exception as error:
-        return {
-            "success": False,
-            "message": str(error)
-        }
+    return schemas.UserBaseOut(
+        id=user.id,
+        username=user.username,
+        email=user.email
+    )
 
 
 @router.post(
