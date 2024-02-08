@@ -17,7 +17,7 @@ def get_question_by_id(question_id: str, form_id: str, db: Session):
 
 def get_questions_by_form_id(form_id: str, db: Session):
     return db.query(Question).filter(Question.form_id == form_id).order_by(
-        Question.created_at.asc(), Question.order.asc()
+        Question.order.desc(), Question.created_at.asc()
     ).all()
 
 
@@ -25,7 +25,7 @@ def get_questions_with_options_by_form_id(form_id: str, db: Session):
     return db.query(Question).options(
         joinedload(Question.options)
     ).filter(Question.form_id == form_id).order_by(
-        Question.created_at.asc(), Question.order.asc()
+        Question.order.desc(), Question.created_at.asc()
     ).all()
 
 
@@ -84,9 +84,9 @@ def delete_question(
 
 
 def change_order(
-        questions: [Question],
+        questions: List[Question],
         question_order: List[str]
-):
+):  # [a, b, c, d]
     for index, question_id in enumerate(question_order):
         question = next(filter(lambda q: q.id == question_id, questions))
         question.order = len(questions) - index - 1

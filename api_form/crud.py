@@ -14,9 +14,8 @@ def get_form_by_id(form_id: str, db: Session):
 
 
 def get_form_detail_by_id(form_id: str, db: Session):
-    # TODO: together with questions and options
+    # together with questions and options
     form = db.query(Form).options(
-        # joinedload(Form.questions)
         joinedload(Form.questions).joinedload(Question.options)
     ).filter(Form.id == form_id).first()
     return form
