@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # ==== app settings ====
-WEB_URL = 'https://formrrito.fun'
+WEB_URL = 'https://www.formrrito.fun'
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 ALGORITHM = os.getenv('ALGORITHM')

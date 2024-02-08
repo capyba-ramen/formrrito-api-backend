@@ -44,7 +44,7 @@ def reply(
     if result:
         data = {
             "form": form_title,
-            "form_link": f"http://{WEB_URL}/form/{form_id}#responses"
+            "form_link": f"{WEB_URL}/form/{form_id}#responses"
         }
         html = render_template('default.j2', data=data)
         background_tasks.add_task(
