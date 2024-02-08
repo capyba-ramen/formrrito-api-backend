@@ -250,8 +250,11 @@ def get_statistics(
                     ]
                 )
             )
+    # number of responses
+    individuals = set([per_reply.individual_id for per_reply in replies])
+
     return schemas.StatisticsOut(
-        total=len(replies),
+        total=len(individuals),
         accepts_reply=form.accepts_reply,
         question_stats=question_stats
     )

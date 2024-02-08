@@ -51,7 +51,7 @@ def create_question(
 
 @router.post(
     "/{form_id}/{question_id}",
-    # response_model=schemas.CreateQuestionOut,
+    response_model=schemas.CreateQuestionOut,
     description="複製單筆問題"
 )
 def duplicate_question(
@@ -66,7 +66,6 @@ def duplicate_question(
         question_id=question_id,
         db=db
     )
-    return result
     return schemas.CreateQuestionOut(
         question_id=result
     )
