@@ -42,7 +42,7 @@ def get_shortened_url(
     "/email",
     description="寄送email(測試用)",
     response_model=bool,
-    include_in_schema=False
+    # include_in_schema=False
 )
 def dev_send_email(
         inputs: schemas.EmailIn = Body(..., description='email內容')
