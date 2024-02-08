@@ -65,8 +65,9 @@ app = FastAPI(lifespan=app_lifespan)
 origins = [
     "http://localhost",
     "http://localhost:3333",
-    "http://3.143.58.231",
-    "http://3.143.58.231:3333"
+    "https://3.143.58.231",
+    "https://3.143.58.231:3333",
+    "https://www.formrrito.fun"
 ]
 
 app.add_middleware(
