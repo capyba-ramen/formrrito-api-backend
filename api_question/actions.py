@@ -99,20 +99,11 @@ def duplicate_question(
         )
 
     # 複製問題成功，變更問題順序 (將複製的問題放在原問題的下一個位置)
-    question_ids_in_order = [question.id for question in questions]
-    index = question_ids_in_order.index(question_id)
-    question_ids_in_order.insert(index + 1, new_added_question_id)
-    new_questions = []
-    for question in questions:
-        if question.id == question_id:
-            new_questions.append(question)
-            new_questions.append(new_added_question)
-        else:
-            new_questions.append(question)
+    questions.insert(questions.index(question_map[question_id]) + 1, new_added_question)
 
     crud.change_order(
-        questions=new_questions,
-        question_order=question_ids_in_order
+        questions=questions,
+        question_order=[question.id for question in questions]
     )
 
     return new_added_question_id
