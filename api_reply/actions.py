@@ -7,6 +7,7 @@ from api_form import crud as form_crud, schemas as form_schemas
 from api_form.constants import QuestionType
 from api_question import crud as question_crud
 from components.db_decorators import transaction
+from environmemt import S3_CDN_DNS
 from . import schemas, crud
 
 
@@ -25,7 +26,7 @@ def get_form(
     return form_schemas.FormOut(
         id=form.id,
         title=form.title if form.title else "",
-        image_url=form.image_url if form.image_url else "",
+        image_url=f"{S3_CDN_DNS}/{form.image_url}" if form.image_url else "",
         description=form.description if form.description else "",
         accepts_reply=form.accepts_reply,
         created_at=form.created_at.strftime('%Y-%m-%dT%H:%M:%SZ'),
@@ -37,6 +38,7 @@ def get_form(
                 description=question.description if question.description else "",
                 type=question.type,
                 is_required=question.is_required,
+                image_url=f"{S3_CDN_DNS}/{question.image_url}" if question.image_url else "",
                 order=question.order,
                 options=[
                     form_schemas.OptionOut(

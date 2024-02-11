@@ -4,6 +4,7 @@ from typing import List
 from sqlalchemy.orm import Session, joinedload
 
 from app.models import Question
+from components.db_decorators import transaction
 from . import schemas
 
 
@@ -71,6 +72,18 @@ def update_question(
         question.type = fields.type
     if fields.is_required is not None:
         question.is_required = fields.is_required
+
+    return True
+
+
+@transaction
+def update_image_url(
+        question: Question,
+        image_url: str,
+        db: Session
+):
+    if image_url:
+        question.image_url = image_url
 
     return True
 
