@@ -29,6 +29,8 @@ jobs:
           echo 'EMAIL_HOST=${{ secrets.EMAIL_HOST }}' >> .env
           echo 'SERVICE_EMAIL=${{ secrets.SERVICE_EMAIL }}' >> .env
           echo 'SERVICE_EMAIL_PASSWORD=${{ secrets.SERVICE_EMAIL_PASSWORD }}' >> .env
+          echo 'AWS_SERVER_PUBLIC_KEY=${{ secrets.AWS_SERVER_PUBLIC_KEY }}' >> .env
+          echo 'AWS_SERVER_SECRET_KEY=${{ secrets.AWS_SERVER_SECRET_KEY }}' >> .env
       - name: Build the Docker image
         run: docker build -t pschuang/formrrito-cicd-pipeline .
       - name: Push to Dockerhub
