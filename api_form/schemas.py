@@ -21,9 +21,10 @@ class OptionOut(BaseModel):
 class QuestionOut(BaseModel):
     id: str = Field(..., description="題目代碼")
     title: str = Field(..., description="題目標題")
-    description: str = Field(None, description="題目描述")
+    description: str = Field("None", description="題目描述")
     type: int = Field(..., description="題目類型")
     is_required: bool = Field(..., description="題目是否必填")
+    image_url: str = Field("None", description="題目圖片")
     order: int = Field(..., description="題目排序")
     options: List[OptionOut] = Field(None, description="題目選項")
 

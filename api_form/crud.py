@@ -100,3 +100,13 @@ def delete_form(
 ):
     db.delete(form)
     return True
+
+
+@transaction
+def update_form_image_url(
+        form: Form,
+        image_url: str,
+        db: Session
+):
+    form.image_url = image_url
+    return True

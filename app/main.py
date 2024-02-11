@@ -3,11 +3,14 @@ import os
 import re
 from contextlib import asynccontextmanager
 
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 from sqlalchemy.orm import Session
 
+from api_tool import actions as tool_actions
+from api_tool import schemas as tool_schemas
+# from . import auth
 from .database import SessionLocal
 
 # models.Base.metadata.create_all(bind=engine) # create tables
@@ -99,6 +102,21 @@ def get_db():
 @app.get("/health_check")
 def get_todos(db: Session = Depends(get_db)):
     return "HELLO WORLD"
+
+
+# note: 由於發現在 api_* 層使用 UploadFile 會導致 swagger 無法正確顯示，因此將 upload_image 移至此層
+@app.post(
+    "/upload_image",
+    description="上傳圖片(用於 form & question)",
+    response_model=bool
+)
+async def upload_image(
+        inputs: tool_schemas.UploadImageInForm = Depends(tool_schemas.UploadImageInForm.as_form),
+        file: UploadFile = File(...),
+        db: Session = Depends(get_db)
+):
+    result = await tool_actions.upload_image(inputs, file, db)
+    return result
 
 
 def custom_openapi():

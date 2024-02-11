@@ -28,3 +28,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 720
 EMAIL_HOST = os.getenv('EMAIL_HOST')
 SERVICE_EMAIL = os.getenv('SERVICE_EMAIL')
 SERVICE_EMAIL_PASSWORD = os.getenv('SERVICE_EMAIL_PASSWORD')
+
+# AWS
+S3_BUCKET = 'formrrito'
+S3_CDN_DNS = 'https://d2tmt2nwrrorft.cloudfront.net'
