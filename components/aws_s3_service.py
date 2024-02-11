@@ -3,10 +3,15 @@ import logging
 import boto3
 from botocore.exceptions import ClientError
 
-from environmemt import S3_BUCKET
+from environmemt import S3_BUCKET, AWS_SERVER_PUBLIC_KEY, AWS_SERVER_SECRET_KEY, REGION_NAME
 
 # connect to AWS S3 via boto3
-s3_client = boto3.client('s3')
+s3_client = boto3.client(
+    's3',
+    aws_access_key_id=AWS_SERVER_PUBLIC_KEY,
+    aws_secret_access_key=AWS_SERVER_SECRET_KEY,
+    region_name=REGION_NAME
+)
 
 
 async def s3_upload_object(contents: bytes, content_type, object_name, bucket=S3_BUCKET):
@@ -26,7 +31,3 @@ async def s3_upload_object(contents: bytes, content_type, object_name, bucket=S3
         logging.error(e)
         return False
     return True
-
-
-if __name__ == "__main__":
-    s3_upload_file('/Users/pinshan.chuang/Downloads/ozarks.png')
