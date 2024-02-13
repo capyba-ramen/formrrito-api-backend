@@ -2,8 +2,9 @@ import importlib
 import os
 import re
 from contextlib import asynccontextmanager
+from typing import Union
 
-from fastapi import Depends, FastAPI, UploadFile, File
+from fastapi import Depends, FastAPI, UploadFile, File, Body
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 from sqlalchemy.orm import Session
@@ -108,7 +109,7 @@ def get_todos(db: Session = Depends(get_db)):
 @app.post(
     "/upload_image",
     description="上傳圖片(用於 form & question)",
-    response_model=bool
+    response_model=Union[bool, str]
 )
 async def upload_image(
         inputs: tool_schemas.UploadImageInForm = Depends(tool_schemas.UploadImageInForm.as_form),
@@ -116,6 +117,19 @@ async def upload_image(
         db: Session = Depends(get_db)
 ):
     result = await tool_actions.upload_image(inputs, file, db)
+    return result
+
+
+@app.delete(
+    "/image",
+    description="刪除圖片 (image_id 為 form & question 中的 image_url)",
+    response_model=bool
+)
+async def delete_image(
+        inputs: tool_schemas.DeleteImageIn = Body(..., title="刪除圖片"),
+        db: Session = Depends(get_db)
+):
+    result = await tool_actions.delete_image(inputs, db)
     return result
 
 

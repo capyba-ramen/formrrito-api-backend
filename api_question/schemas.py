@@ -14,6 +14,7 @@ class UpdateQuestionIn(BaseModel):
     description: str = Field(None, description="問題描述")
     type: int = Field(..., description="問題類型")
     is_required: bool = Field(None, description="問題是否必填")
+    image_url: str = Field(None, description="問題圖片網址")
 
 
 class DeleteQuestionIn(BaseModel):
