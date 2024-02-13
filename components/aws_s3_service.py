@@ -31,3 +31,25 @@ async def s3_upload_object(contents: bytes, content_type, object_name, bucket=S3
         logging.error(e)
         return False
     return True
+
+
+async def s3_delete_object(object_name, bucket=S3_BUCKET):
+    try:
+        response = s3_client.delete_object(Bucket=bucket, Key=object_name)
+    except ClientError as e:
+        logging.error(e)
+        return False
+    return True
+
+
+async def s3_copy_object(copy_source, new_key, bucket=S3_BUCKET):
+    try:
+        response = s3_client.copy_object(
+            Bucket=bucket,
+            CopySource=f"{bucket}/{copy_source}",
+            Key=new_key
+        )
+    except ClientError as e:
+        logging.error(e)
+        return False
+    return True

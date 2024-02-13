@@ -1,10 +1,13 @@
+import uuid
+
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
 from api_form import crud as form_crud
 from api_question import crud as question_crud
-from components.aws_s3_service import s3_upload_object
+from components.aws_s3_service import s3_upload_object, s3_delete_object
 from components.email import send_email, render_template
+from environmemt import S3_CDN_DNS
 from . import crud
 from .schemas import EmailIn
 
@@ -63,7 +66,7 @@ async def upload_image(
         inputs,
         file,
         db: Session
-) -> bool:
+):
     """
     此 action 用用於上傳圖片，用於表單或問題
 
@@ -98,11 +101,13 @@ async def upload_image(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="問題不存在"
         )
-
+    # 驗證格式 & 大小
     supported_file_types = {
         'image/png': 'png',
         'image/jpeg': 'jpg'
     }
+    size_limit = 1024 * 1024 * 1  # 1MB
+
     if file.content_type not in supported_file_types:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -110,10 +115,18 @@ async def upload_image(
         )
 
     contents = await file.read()
+
+    if not 0 < len(contents) <= 1 * size_limit:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='Supported file size is 0 - 1 MB'
+        )
+
+    image_url_id = str(uuid.uuid4()) if inputs.upload_type == "form" else f"_{str(uuid.uuid4())}"
     upload_result = await s3_upload_object(
         contents=contents,
         object_name="{}.{}".format(
-            inputs.form_id if inputs.upload_type == "form" else inputs.question_id,
+            image_url_id,
             supported_file_types[file.content_type]
         ),
         content_type=file.content_type
@@ -121,17 +134,89 @@ async def upload_image(
 
     # 上傳成功，更新 DB
     if upload_result:
-        if inputs.upload_type == "form":
+        if inputs.upload_type == "form":  # form 的 image_url 直接更新至 DB
             form_crud.update_form_image_url(
                 form=form,
-                image_url=f"{inputs.form_id}.{supported_file_types[file.content_type]}",
+                image_url=f"{image_url_id}.{supported_file_types[file.content_type]}",
                 db=db
             )
-        else:
-            question_crud.update_image_url(
-                question=question,
-                image_url=f"{inputs.question_id}.{supported_file_types[file.content_type]}",
-                db=db
+        else:  # question 的 image_url 不直接更新至 DB (在 PUT /api/question 時再更新)
+            pass
+            # question_crud.update_image_url(
+            #     question=question,
+            #     image_url=f"{image_url_id}.{supported_file_types[file.content_type]}",
+            #     db=db
+            # )
+
+    return upload_result if not upload_result else f"{S3_CDN_DNS}/{image_url_id}.{supported_file_types[file.content_type]}"
+
+
+async def delete_image(
+        inputs,
+        db: Session
+):
+    # TODO: upload_type 驗證移動到 schemas
+    if inputs.delete_type not in ["form", "question"]:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="delete_type 參數錯誤"
+        )
+
+    # 驗證 form or question 是否存在
+    form = form_crud.get_form_by_id(
+        form_id=inputs.form_id,
+        db=db
+    )
+    if not form:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="表單不存在"
+        )
+
+    question = question_crud.get_question_by_id(
+        question_id=inputs.question_id,
+        form_id=inputs.form_id,
+        db=db
+    )
+
+    if inputs.delete_type == "question" and not question:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="問題不存在"
+        )
+
+    if inputs.delete_type == "form":
+        if form.image_url != inputs.image_url:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="image_url 參數錯誤"
+            )
+    else:
+        if question.image_url != inputs.image_url:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="image_url 參數錯誤"
             )
 
-    return upload_result
+    # 刪除 S3 上的圖片
+    delete_image_result = await s3_delete_object(
+        object_name=inputs.image_url
+    )
+
+    # 刪除成功，更新 DB
+    if delete_image_result:
+        if inputs.delete_type == "form":
+            form_crud.update_form_image_url(
+                form=form,
+                image_url="",
+                db=db
+            )
+        else:  # question 的 image_url 不直接更新至 DB (在 PUT /api/question 時再更新)
+            pass
+            # question_crud.update_image_url(
+            #     question=question,
+            #     image_url="",
+            #     db=db
+            # )
+
+    return delete_image_result

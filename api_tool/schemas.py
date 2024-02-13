@@ -31,3 +31,10 @@ class UploadImageInForm(BaseModel):
             form_id=form_id,
             question_id=question_id
         )
+
+
+class DeleteImageIn(BaseModel):
+    delete_type: str
+    form_id: str
+    question_id: str = None
+    image_url: str

@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from api_form.schemas import OptionOut
 from app import auth
 from app.main import get_db
+from components.aws_s3_service import s3_copy_object, s3_delete_object
 from . import actions, schemas
 
 router = APIRouter()
@@ -54,20 +55,24 @@ def create_question(
     response_model=schemas.CreateQuestionOut,
     description="複製單筆問題"
 )
-def duplicate_question(
+async def duplicate_question(
         user=Depends(auth.get_current_user),
         form_id: str = Path(..., title="表單編號"),
         question_id: str = Path(..., title="問題編號"),
         db: Session = Depends(get_db)
 ):
-    result = actions.duplicate_question(
+    new_added_question_id, old_image_url, new_image_url = actions.duplicate_question(
         user_id=user.user_id,
         form_id=form_id,
         question_id=question_id,
         db=db
     )
+    
+    # 複製一份圖片
+    await s3_copy_object(copy_source=old_image_url, new_key=new_image_url)
+
     return schemas.CreateQuestionOut(
-        question_id=result
+        question_id=new_added_question_id
     )
 
 
@@ -76,7 +81,7 @@ def duplicate_question(
     response_model=Union[OptionOut, None],  #
     description="編輯單筆問題"
 )
-def update_question(
+async def update_question(
         user=Depends(auth.get_current_user),
         inputs: schemas.UpdateQuestionIn = Body(..., title="問題資訊"),
         db: Session = Depends(get_db)
@@ -86,6 +91,12 @@ def update_question(
         inputs=inputs,
         db=db
     )
+    # 上傳圖片的情境
+    if inputs.image_url:
+        # 將圖片複製一份正式的
+        await s3_copy_object(copy_source=inputs.image_url, new_key=inputs.image_url.split('_')[1])
+        # 刪除暫存的圖片
+        await s3_delete_object(object_name=inputs.image_url)
     return result
 
 

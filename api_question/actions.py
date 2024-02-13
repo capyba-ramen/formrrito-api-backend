@@ -1,3 +1,5 @@
+import uuid
+
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -72,12 +74,15 @@ def duplicate_question(
             detail="問題不存在"
         )
 
+    new_image_url = str(uuid.uuid4())
+
     new_added_question_id, new_added_question = crud.create_question(
         form_id=form_id,
         title=question_map[question_id].title,
         description=question_map[question_id].description,
         question_type=question_map[question_id].type,
         is_required=question_map[question_id].is_required,
+        image_url=new_image_url,  # s3 圖片網址需不同
         db=db
     )
 
@@ -106,7 +111,7 @@ def duplicate_question(
         question_order=[question.id for question in questions]
     )
 
-    return new_added_question_id
+    return new_added_question_id, question_map[question_id].image_url, new_image_url
 
 
 @transaction
