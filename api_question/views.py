@@ -67,7 +67,7 @@ async def duplicate_question(
         question_id=question_id,
         db=db
     )
-    
+
     # 複製一份圖片
     await s3_copy_object(copy_source=old_image_url, new_key=new_image_url)
 
@@ -86,7 +86,8 @@ async def update_question(
         inputs: schemas.UpdateQuestionIn = Body(..., title="問題資訊"),
         db: Session = Depends(get_db)
 ):
-    result = actions.update_question(
+    temporary_image_url = inputs.image_url  # 先接下來，因為後面會被清掉
+    result, existing_image_url, permanent_image_url = actions.update_question(
         user_id=user.user_id,
         inputs=inputs,
         db=db
@@ -94,9 +95,13 @@ async def update_question(
     # 上傳圖片的情境
     if inputs.image_url:
         # 將圖片複製一份正式的
-        await s3_copy_object(copy_source=inputs.image_url, new_key=inputs.image_url.split('_')[1])
+        await s3_copy_object(copy_source=temporary_image_url, new_key=permanent_image_url)
         # 刪除暫存的圖片
-        await s3_delete_object(object_name=inputs.image_url)
+        await s3_delete_object(object_name=temporary_image_url)
+
+        # 刪除舊的圖片
+        if existing_image_url and existing_image_url.image_url[:7] != 'default':
+            await s3_delete_object(object_name=existing_image_url)
     return result
 
 
@@ -105,16 +110,21 @@ async def update_question(
     response_model=bool,
     description="刪除單筆問題"
 )
-def delete_question(
+async def delete_question(
         user=Depends(auth.get_current_user),
         form_id: str = Path(..., title="表單代碼"),
         question_id: str = Path(..., title="問題代碼"),
         db: Session = Depends(get_db)
 ):
-    result = actions.delete_question(
+    result, image_url = actions.delete_question(
         user_id=user.user_id,
         form_id=form_id,
         question_id=question_id,
         db=db
     )
+
+    # 刪除圖片
+    if image_url and image_url[:7] != 'default':
+        await s3_delete_object(object_name=image_url)
+        
     return result

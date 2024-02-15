@@ -71,7 +71,7 @@ class Reply(Base):
 
     id = Column(String(40), primary_key=True, default=uuid.uuid4)
     individual_id = Column(String(40), nullable=False, comment="答覆者ID")
-    question_id = Column(String(40), ForeignKey("question.id"), nullable=False)
+    question_id = Column(String(40), nullable=False)
     option_id = Column(String(500), comment="問題是選擇題時才有值")
     response = Column(String(500), comment="回覆(簡答/詳答的答案 & 選擇題的選項)")
     created_at = Column(DateTime, default=datetime.datetime.utcnow)

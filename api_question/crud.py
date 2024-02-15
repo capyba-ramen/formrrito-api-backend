@@ -76,12 +76,7 @@ def update_question(
     if fields.is_required is not None:
         question.is_required = fields.is_required
     if fields.image_url is not None:
-        # 刪除 image 的情境，會帶 "" 來更新 question.image_url
-        if fields.image_url == "":
-            question.image_url = fields.image_url
-        else:
-            # 上傳之後的圖片 key 都會是 _ 當開頭，存進 db 的時候要拿掉
-            question.image_url = fields.image_url.split('_')[1]
+        question.image_url = fields.image_url
 
     return True
 

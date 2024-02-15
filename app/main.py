@@ -2,7 +2,6 @@ import importlib
 import os
 import re
 from contextlib import asynccontextmanager
-from typing import Union
 
 from fastapi import Depends, FastAPI, UploadFile, File, Body
 from fastapi.middleware.cors import CORSMiddleware
@@ -109,7 +108,7 @@ def get_todos(db: Session = Depends(get_db)):
 @app.post(
     "/upload_image",
     description="上傳圖片(用於 form & question)",
-    response_model=Union[bool, str]
+    response_model=str
 )
 async def upload_image(
         inputs: tool_schemas.UploadImageInForm = Depends(tool_schemas.UploadImageInForm.as_form),

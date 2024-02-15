@@ -12,7 +12,7 @@ class QuestionType(enum.IntEnum):
 party_invite = {
     "title": "Party Invite",
     "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed et faucibus lorem.",
-    "image_url": "1",
+    "image_url": "default/1.webp",
     "questions": [
         {
             "title": "What is your name?",
@@ -29,8 +29,8 @@ party_invite = {
             "is_required": True,
             "order": 1,
             "options": [
-                    "Yes, I will be there!",
-                    "Sorry, I can't make it."
+                "Yes, I will be there!",
+                "Sorry, I can't make it."
             ]
         },
         {
@@ -85,7 +85,7 @@ party_invite = {
 contact_information = {
     "title": "Contact Information",
     "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed et faucibus lorem.",
-    "image_url": "2",
+    "image_url": "default/2.webp",
     "questions": [
         {
             "title": "Name",
@@ -120,7 +120,7 @@ contact_information = {
             "options": []
         },
         {
-            "title":"Comments",
+            "title": "Comments",
             "description": "",
             "type": QuestionType.COMPLEX.value,
             "is_required": False,
@@ -133,7 +133,7 @@ contact_information = {
 event_registration = {
     "title": "Event Registration",
     "description": "Event Timing: January 5th, 2024\nEvent Address: 123 Y Street Y City, ST 123\nContact us at: 123-456-7890 or mymail@example.com",
-    "image_url": "3",
+    "image_url": "default/3.webp",
     "questions": [
         {
             "title": "Name",
@@ -201,7 +201,7 @@ event_registration = {
 rsvp = {
     "title": "Event RSVP",
     "description": "Event Address: 123 Y Street Y City, ST 123\nContact us at: 123-456-7890 or mymail@example.com",
-    "image_url": "4",
+    "image_url": "default/4.webp",
     "questions": [
         {
             "title": "Can you attend?",
@@ -249,7 +249,7 @@ rsvp = {
 customer_feedback = {
     "title": "Customer Feedback",
     "description": "We would love to hear your feedback on how we can improve your experience.",
-    "image_url": "5",
+    "image_url": "default/5.webp",
     "questions": [
         {
             "title": "Feedback Type",

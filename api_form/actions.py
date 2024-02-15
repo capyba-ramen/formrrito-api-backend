@@ -7,7 +7,6 @@ from api_option import crud as option_crud
 from api_question import crud as question_crud
 from components.db_decorators import transaction
 from components.paginator import paginate_data
-from environmemt import S3_CDN_DNS
 from . import crud, schemas
 from .constants import CustomForm, custom_form_template_map
 
@@ -33,7 +32,7 @@ def get_forms(
                 schemas.FormBaseOut(
                     id=form.id,
                     title=form.title if form.title else "",
-                    image_url=f"{S3_CDN_DNS}/{form.image_url}" if form.image_url else "",
+                    image_url=form.image_url if form.image_url else "",
                     description=form.description if form.description else "",
                     accepts_reply=form.accepts_reply,
                     created_at=form.created_at.strftime('%Y-%m-%dT%H:%M:%SZ'),
@@ -77,7 +76,7 @@ def get_form(
     return schemas.FormOut(
         id=form.id,
         title=form.title if form.title else "",
-        image_url=f"{S3_CDN_DNS}/{form.image_url}" if form.image_url else "",
+        image_url=form.image_url if form.image_url else "",
         description=form.description if form.description else "",
         accepts_reply=form.accepts_reply,
         created_at=form.created_at.strftime('%Y-%m-%dT%H:%M:%SZ'),
@@ -89,7 +88,7 @@ def get_form(
                 description=question.description if question.description else "",
                 type=question.type,
                 is_required=question.is_required,
-                image_url=f"{S3_CDN_DNS}/{question.image_url}" if question.image_url else "",
+                image_url=question.image_url if question.image_url else "",
                 order=question.order,
                 options=[
                     schemas.OptionOut(
@@ -112,7 +111,7 @@ def create_form(
     result = crud.create_form(
         user_id=user_id,
         db=db,
-        image_url=str(random.randint(1, 10))
+        image_url=f"default/{str(random.randint(1, 19))}.webp"
     )
     print(f"Successfully created form (id:{result})")
     return result

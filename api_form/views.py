@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Depends, Query, Body, Path
 from sqlalchemy.orm import Session
 
+from api_tool import actions as tool_actions
 from app import auth
 from app.main import get_db
-from . import actions, schemas
 from components.paginator import BasePageOut
-
+from . import actions, schemas
 
 router = APIRouter()
 
@@ -110,7 +110,7 @@ def update_form(
     response_model=bool,
     description="刪除表單",
 )
-def delete_form(
+async def delete_form(
         user=Depends(auth.get_current_user),
         form_id: str = Path(..., title="表單代碼"),
         db: Session = Depends(get_db)
@@ -119,5 +119,10 @@ def delete_form(
         user_id=user.user_id,
         form_id=form_id,
         db=db
+    )
+
+    # 刪除表單相關圖片
+    await tool_actions.delete_objects_by_folder(
+        folder_name=form_id
     )
     return result
