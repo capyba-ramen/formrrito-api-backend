@@ -8,7 +8,7 @@ from api_form.constants import QuestionType
 from api_form.schemas import OptionOut
 from api_option import crud as option_crud
 from components.db_decorators import transaction
-from . import crud, schemas
+from . import crud, schemas, utils
 
 
 @transaction
@@ -159,6 +159,14 @@ def update_question(
             detail="問題類型錯誤"
         )
 
+    existing_image_url = question.image_url
+
+    permanent_image_url = utils.turn_temporary_image_url_to_permanent_image_url(
+        form_id=inputs.form_id,
+        temporary_image_url=inputs.image_url
+    )
+    inputs.image_url = permanent_image_url
+
     # 如果問題是選擇題且要把問題類型改成其他類型，則刪除所有選項
     if question.type in [
         QuestionType.SINGLE.value,
@@ -186,7 +194,7 @@ def update_question(
             fields=inputs,
         )
 
-        return None
+        return None, existing_image_url, permanent_image_url
 
     elif question.type in [
         QuestionType.SIMPLE.value,
@@ -211,7 +219,7 @@ def update_question(
         return OptionOut(
             id=question.options[0].id,
             title=question.options[0].title
-        )
+        ), existing_image_url, permanent_image_url
 
     else:
         # 問題類型沒有改變，則修改其他問題欄位
@@ -220,7 +228,7 @@ def update_question(
             fields=inputs,
         )
 
-        return None
+        return None, existing_image_url, permanent_image_url
 
 
 @transaction
@@ -262,7 +270,7 @@ def delete_question(
         db=db
     )
 
-    return result
+    return result, question.image_url
 
 
 @transaction

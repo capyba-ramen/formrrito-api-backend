@@ -5,9 +5,8 @@ from sqlalchemy.orm import Session
 
 from api_form import crud as form_crud
 from api_question import crud as question_crud
-from components.aws_s3_service import s3_upload_object, s3_delete_object
+from components.aws_s3_service import s3_upload_object, s3_delete_object, s3_list_objects
 from components.email import send_email, render_template
-from environmemt import S3_CDN_DNS
 from . import crud
 from .schemas import EmailIn
 
@@ -122,7 +121,8 @@ async def upload_image(
             detail='Supported file size is 0 - 1 MB'
         )
 
-    image_url_id = str(uuid.uuid4()) if inputs.upload_type == "form" else f"_{str(uuid.uuid4())}"
+    # 以 form_id 為資料夾區分各表單圖片
+    image_url_id = f"{form.id}/{str(uuid.uuid4())}" if inputs.upload_type == "form" else f"{form.id}/_{str(uuid.uuid4())}"
     upload_result = await s3_upload_object(
         contents=contents,
         object_name="{}.{}".format(
@@ -134,21 +134,34 @@ async def upload_image(
 
     # 上傳成功，更新 DB
     if upload_result:
-        if inputs.upload_type == "form":  # form 的 image_url 直接更新至 DB
+        if inputs.upload_type == "form":
+            # 把舊的圖片刪除
+            if form.image_url and form.image_url[:7] != 'default':
+                await s3_delete_object(
+                    object_name=form.image_url
+                )
+            # form 的 image_url 直接更新至 DB
             form_crud.update_form_image_url(
                 form=form,
                 image_url=f"{image_url_id}.{supported_file_types[file.content_type]}",
                 db=db
             )
-        else:  # question 的 image_url 不直接更新至 DB (在 PUT /api/question 時再更新)
+
+        else:  # question 的 image_url 不直接更新至 DB (在 PUT /api/question 時再更新，並把舊圖刪除)
             pass
             # question_crud.update_image_url(
             #     question=question,
             #     image_url=f"{image_url_id}.{supported_file_types[file.content_type]}",
             #     db=db
             # )
+    # 上傳失敗
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="圖片上傳失敗"
+        )
 
-    return upload_result if not upload_result else f"{S3_CDN_DNS}/{image_url_id}.{supported_file_types[file.content_type]}"
+    return upload_result if not upload_result else f"{image_url_id}.{supported_file_types[file.content_type]}"
 
 
 async def delete_image(
@@ -220,3 +233,11 @@ async def delete_image(
             # )
 
     return delete_image_result
+
+
+async def delete_objects_by_folder(
+        folder_name: str
+):
+    objects = s3_list_objects(prefix=f"{folder_name}/")
+    for obj in objects:
+        await s3_delete_object(object_name=obj['Key'])

@@ -53,3 +53,16 @@ async def s3_copy_object(copy_source, new_key, bucket=S3_BUCKET):
         logging.error(e)
         return False
     return True
+
+
+def s3_list_objects(bucket=S3_BUCKET, prefix=""):
+    try:
+        objects = s3_client.list_objects_v2(
+            Bucket=bucket,
+            Prefix=prefix,
+            MaxKeys=100
+        )
+    except ClientError as e:
+        logging.error(e)
+        return None
+    return objects.get("Contents", [])
