@@ -1,11 +1,13 @@
 from app.models import Question
 
 
-def check_image_url_is_temporary_image_url(image_url: str):
+def check_image_url_is_temporary(image_url: str):
     """
         # permanent image url = {form_id}/{image_url}
         # temporary image url = {form_id}/_{image_url}
     """
+    if not image_url:
+        return False
     image_url = image_url.split('/')[1]
     return image_url.startswith('_')
 
@@ -29,7 +31,7 @@ def generate_existing_image_url_to_delete_and_new_image_url_to_update(
     existing_image_url = question.image_url if question.image_url else None
 
     # 判斷需不需要把 s3 圖片刪除 (有重新上傳圖片的時候才需要，)
-    deletes_s3_by_image_url = check_image_url_is_temporary_image_url(input_image_url)
+    deletes_s3_by_image_url = check_image_url_is_temporary(input_image_url)
 
     if not deletes_s3_by_image_url:
         print('Not deletes_s3_by_image_url')

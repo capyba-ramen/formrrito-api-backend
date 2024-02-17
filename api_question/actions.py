@@ -75,7 +75,8 @@ def duplicate_question(
             detail="問題不存在"
         )
 
-    new_image_url = f"{form_id}/{str(uuid.uuid4())}"
+    # 如果沒有圖片，則不需要複製圖片
+    new_image_url = f"{form_id}/{str(uuid.uuid4())}" if question_map[question_id].image_url else ""
 
     new_added_question_id, new_added_question = crud.create_question(
         form_id=form_id,
