@@ -69,7 +69,8 @@ async def duplicate_question(
     )
 
     # 複製一份圖片
-    await s3_copy_object(copy_source=old_image_url, new_key=new_image_url)
+    if old_image_url:
+        await s3_copy_object(copy_source=old_image_url, new_key=new_image_url)
 
     return schemas.CreateQuestionOut(
         question_id=new_added_question_id
