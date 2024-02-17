@@ -119,8 +119,8 @@ async def upload_image(
     return result
 
 
-@app.delete(
-    "/image",
+@app.post(
+    "/delete_image",
     description="刪除圖片 (image_id 為 form & question 中的 image_url)",
     response_model=bool
 )
