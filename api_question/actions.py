@@ -7,6 +7,7 @@ from api_form import crud as form_crud
 from api_form.constants import QuestionType
 from api_form.schemas import OptionOut
 from api_option import crud as option_crud
+from components.aws_s3_service import s3_copy_object, s3_delete_object
 from components.db_decorators import transaction
 from . import crud, schemas, utils
 
@@ -74,7 +75,7 @@ def duplicate_question(
             detail="問題不存在"
         )
 
-    new_image_url = str(uuid.uuid4())
+    new_image_url = f"{form_id}/{str(uuid.uuid4())}"
 
     new_added_question_id, new_added_question = crud.create_question(
         form_id=form_id,
@@ -112,6 +113,49 @@ def duplicate_question(
     )
 
     return new_added_question_id, question_map[question_id].image_url, new_image_url
+
+
+async def upload_question_image_before_update_question(
+        form_id: str,
+        question_id: str,
+        input_image_url: str,
+        db: Session
+):
+    """
+        圖片網址的處理方式：
+        刪除: image_url = ""
+        新增: image_url = "temporary_image_url"
+        不動: image_url = "" or permanent_image_url
+
+        note: 只有 input_image_url 是 temporary 時才需要在這個步驟處理上傳
+    """
+    question = crud.get_question_by_id(
+        question_id=question_id,
+        form_id=form_id,
+        db=db
+    )
+
+    if question is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="問題不存在"
+        )
+
+    existing_image_url, deletes_s3_by_image_url, permanent_image_url = (
+        utils.generate_existing_image_url_to_delete_and_new_image_url_to_update(
+            question=question,
+            input_image_url=input_image_url
+        )
+    )
+
+    # 上傳圖片的情境
+    if deletes_s3_by_image_url:
+        # 將圖片複製一份正式的
+        await s3_copy_object(copy_source=input_image_url, new_key=permanent_image_url)
+        # 刪除暫存的圖片
+        await s3_delete_object(object_name=input_image_url)
+
+    return existing_image_url, deletes_s3_by_image_url, permanent_image_url
 
 
 @transaction
@@ -159,14 +203,6 @@ def update_question(
             detail="問題類型錯誤"
         )
 
-    existing_image_url = question.image_url
-
-    permanent_image_url = utils.turn_temporary_image_url_to_permanent_image_url(
-        form_id=inputs.form_id,
-        temporary_image_url=inputs.image_url
-    )
-    inputs.image_url = permanent_image_url
-
     # 如果問題是選擇題且要把問題類型改成其他類型，則刪除所有選項
     if question.type in [
         QuestionType.SINGLE.value,
@@ -194,7 +230,7 @@ def update_question(
             fields=inputs,
         )
 
-        return None, existing_image_url, permanent_image_url
+        return None
 
     elif question.type in [
         QuestionType.SIMPLE.value,
@@ -219,7 +255,7 @@ def update_question(
         return OptionOut(
             id=question.options[0].id,
             title=question.options[0].title
-        ), existing_image_url, permanent_image_url
+        )
 
     else:
         # 問題類型沒有改變，則修改其他問題欄位
@@ -228,7 +264,7 @@ def update_question(
             fields=inputs,
         )
 
-        return None, existing_image_url, permanent_image_url
+        return None
 
 
 @transaction
