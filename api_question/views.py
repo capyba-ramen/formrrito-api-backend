@@ -86,21 +86,25 @@ async def update_question(
         inputs: schemas.UpdateQuestionIn = Body(..., title="問題資訊"),
         db: Session = Depends(get_db)
 ):
-    temporary_image_url = inputs.image_url  # 先接下來，因為後面會被清掉
-    result, existing_image_url, permanent_image_url = actions.update_question(
+    existing_image_url, deletes_s3_by_image_url, permanent_image_url = (
+        await actions.upload_question_image_before_update_question(
+            form_id=inputs.form_id,
+            question_id=inputs.question_id,
+            input_image_url=inputs.image_url,
+            db=db
+        )
+    )
+
+    inputs.image_url = permanent_image_url
+    result = actions.update_question(
         user_id=user.user_id,
         inputs=inputs,
         db=db
     )
-    # 上傳圖片的情境
-    if inputs.image_url:
-        # 將圖片複製一份正式的
-        await s3_copy_object(copy_source=temporary_image_url, new_key=permanent_image_url)
-        # 刪除暫存的圖片
-        await s3_delete_object(object_name=temporary_image_url)
 
-        # 刪除舊的圖片
-        if existing_image_url and existing_image_url.image_url[:7] != 'default':
+    # 刪除舊的圖片
+    if deletes_s3_by_image_url:
+        if existing_image_url and existing_image_url[:7] != 'default':
             await s3_delete_object(object_name=existing_image_url)
     return result
 
@@ -126,5 +130,5 @@ async def delete_question(
     # 刪除圖片
     if image_url and image_url[:7] != 'default':
         await s3_delete_object(object_name=image_url)
-        
+
     return result
