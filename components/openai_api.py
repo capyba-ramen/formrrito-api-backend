@@ -73,7 +73,7 @@ def make_hierarchical_dependency_context(
 def make_project_context(
         main_task_as_opening: str,
         dependency_context: str,
-        other_descriptions: list[str] = None
+        other_descriptions: List[str] = None
 ):
     result_dependent_descriptions = f"{''.join(other_descriptions)}." if other_descriptions else ""
     return main_task_as_opening + dependency_context + result_dependent_descriptions
