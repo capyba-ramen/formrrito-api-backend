@@ -35,3 +35,6 @@ S3_CDN_DNS = 'https://d2tmt2nwrrorft.cloudfront.net'
 AWS_SERVER_PUBLIC_KEY = os.getenv('AWS_SERVER_PUBLIC_KEY')
 AWS_SERVER_SECRET_KEY = os.getenv('AWS_SERVER_SECRET_KEY')
 REGION_NAME = 'ap-northeast-1'
+
+# openapi
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')

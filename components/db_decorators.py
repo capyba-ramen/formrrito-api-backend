@@ -1,5 +1,7 @@
 import functools
 
+from sqlalchemy import inspect
+
 
 def transaction(func):
     # todo: logging part
@@ -21,3 +23,8 @@ def transaction(func):
             return func(*args, **kwargs)
 
     return wrapper
+
+
+def instance_to_dict(instance):
+    return {c.key: getattr(instance, c.key)
+            for c in inspect(instance).mapper.column_attrs}
