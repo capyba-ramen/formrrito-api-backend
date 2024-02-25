@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, Body, Path, BackgroundTasks
 from sqlalchemy.orm import Session
 
 from api_form import schemas as form_schemas
+from app import auth
 from app.main import get_db
 from components.email import send_email, render_template
 from environmemt import WEB_URL
@@ -67,4 +68,21 @@ def get_statistics(
         db: Session = Depends(get_db)
 ):
     result = actions.get_statistics(form_id=form_id, db=db)
+    return result
+
+
+@router.post(
+    "/responses",
+    description="匯出表單回覆",
+    response_model=str  # pre-signed_url
+)
+async def export_responses(
+        user=Depends(auth.get_current_user),
+        form_id: str = Path(..., title="表單代碼"),
+        db: Session = Depends(get_db)
+):
+    result = await actions.export_responses(
+        form_id=form_id,
+        db=db
+    )
     return result
