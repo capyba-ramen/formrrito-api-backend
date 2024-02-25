@@ -11,6 +11,23 @@ from . import actions, schemas
 router = APIRouter()
 
 
+@router.post(
+    "/responses",
+    description="匯出表單回覆",
+    response_model=str  # pre-signed_url
+)
+async def export_responses(
+        user=Depends(auth.get_current_user),
+        inputs: schemas.ExportResponsesIn = Body(..., title="表單代碼"),
+        db: Session = Depends(get_db)
+):
+    result = await actions.export_responses(
+        form_id=inputs.form_id,
+        db=db
+    )
+    return result
+
+
 @router.get(
     "/{form_id}",
     description="取得單筆表單資料",
@@ -68,21 +85,4 @@ def get_statistics(
         db: Session = Depends(get_db)
 ):
     result = actions.get_statistics(form_id=form_id, db=db)
-    return result
-
-
-@router.post(
-    "/responses",
-    description="匯出表單回覆",
-    response_model=str  # pre-signed_url
-)
-async def export_responses(
-        user=Depends(auth.get_current_user),
-        inputs: schemas.ExportResponsesIn = Body(..., title="表單代碼"),
-        db: Session = Depends(get_db)
-):
-    result = await actions.export_responses(
-        form_id=inputs.form_id,
-        db=db
-    )
     return result
