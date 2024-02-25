@@ -1,4 +1,4 @@
-from typing import List, Any
+from typing import List, Any, Union
 
 from pydantic import BaseModel, Field
 
@@ -41,3 +41,8 @@ class FormBaseOut(BaseModel):
 
 class FormOut(FormBaseOut):
     questions: List[QuestionOut] = Field(None, description="表單題目")
+
+
+class UpdateQuestionOut(BaseModel):
+    option: Union[OptionOut, None] = Field(..., description="")
+    permanent_image_url: str = Field(..., description="永久圖片網址(確定更新問題後的)")

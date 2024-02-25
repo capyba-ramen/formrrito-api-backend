@@ -1,9 +1,7 @@
-from typing import Union
-
 from fastapi import APIRouter, Depends, Path, Body
 from sqlalchemy.orm import Session
 
-from api_form.schemas import OptionOut
+from api_form.schemas import UpdateQuestionOut
 from app import auth
 from app.main import get_db
 from components.aws_s3_service import s3_copy_object, s3_delete_object
@@ -79,7 +77,7 @@ async def duplicate_question(
 
 @router.put(
     "/",
-    response_model=Union[OptionOut, None],  #
+    response_model=UpdateQuestionOut,
     description="編輯單筆問題"
 )
 async def update_question(
@@ -107,7 +105,10 @@ async def update_question(
     if deletes_s3_by_image_url:
         if existing_image_url and existing_image_url[:7] != 'default':
             await s3_delete_object(object_name=existing_image_url)
-    return result
+    return UpdateQuestionOut(
+        option=result,
+        permanent_image_url=permanent_image_url
+    )
 
 
 @router.delete(

@@ -105,7 +105,7 @@ async def upload_image(
         'image/png': 'png',
         'image/jpeg': 'jpg'
     }
-    size_limit = 1024 * 1024 * 1  # 1MB
+    size_limit = 1024 * 1024 * 5  # 5MB
 
     if file.content_type not in supported_file_types:
         raise HTTPException(
@@ -115,10 +115,10 @@ async def upload_image(
 
     contents = await file.read()
 
-    if not 0 < len(contents) <= 1 * size_limit:
+    if not 0 < len(contents) <= size_limit:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail='Supported file size is 0 - 1 MB'
+            detail='Supported file size is 0 - 5 MB'
         )
 
     # 以 form_id 為資料夾區分各表單圖片
