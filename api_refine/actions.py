@@ -120,7 +120,7 @@ def refine_options(
     )
 
     output_specifications = make_output_specifications(
-        format_description="array of string with 5 items maximum",
+        format_description="array of string with 5 items maximum. Use double quotes for each item.",
         format_example='["alcohol", "onion"]'
     )
 
