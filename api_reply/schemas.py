@@ -40,3 +40,7 @@ class StatisticsOut(BaseModel):
     accepts_reply: bool = Field(..., description="是否接受回覆")
     question_stats: List[Union[QuestionStatisticTextOut, QuestionStatisticChoiceOut]] = Field(...,
                                                                                               description="問題列表")
+
+
+class ExportResponsesIn(BaseModel):
+    form_id: str = Field(..., description="表單代碼")
