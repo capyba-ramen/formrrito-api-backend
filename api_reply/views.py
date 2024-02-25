@@ -78,7 +78,7 @@ def get_statistics(
 )
 async def export_responses(
         user=Depends(auth.get_current_user),
-        form_id: str = Path(..., title="表單代碼"),
+        form_id: str = Body(..., title="表單代碼"),
         db: Session = Depends(get_db)
 ):
     result = await actions.export_responses(
