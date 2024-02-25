@@ -7,6 +7,7 @@ RUN mkdir /code
 ADD requirements.txt requirements.txt
 
 # Install the dependencies
+RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 ENV PYTHONPATH=/code
