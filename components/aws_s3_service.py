@@ -66,3 +66,28 @@ def s3_list_objects(bucket=S3_BUCKET, prefix=""):
         logging.error(e)
         return None
     return objects.get("Contents", [])
+
+
+async def create_presigned_url(object_name, bucket_name=S3_BUCKET, expiration=3600):
+    """Generate a presigned URL to share an S3 object
+
+    :param bucket_name: S3 bucket name
+    :param object_name: S3 object name
+    :param expiration: Time in seconds for the pre-signed URL to remain valid
+    :return: Pre-signed URL as string. If error, returns None.
+    """
+
+    # Generate a pre-signed URL for the S3 object
+    try:
+        response = s3_client.generate_presigned_url(
+            'get_object',
+            Params={'Bucket': bucket_name,
+                    'Key': object_name},
+            ExpiresIn=expiration
+        )
+    except ClientError as e:
+        logging.error(e)
+        return None
+
+    # The response contains the pre-signed URL
+    return response

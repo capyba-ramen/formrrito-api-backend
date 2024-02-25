@@ -1,12 +1,15 @@
 import uuid
 
+import pandas as pd
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
 from api_form import crud as form_crud, schemas as form_schemas
 from api_form.constants import QuestionType
 from api_question import crud as question_crud
+from components.aws_s3_service import s3_upload_object, create_presigned_url
 from components.db_decorators import transaction
+from components.pandas_utils import convert_df_to_excel
 from . import schemas, crud
 
 
@@ -259,3 +262,74 @@ def get_statistics(
         accepts_reply=form.accepts_reply,
         question_stats=question_stats
     )
+
+
+async def export_responses(
+        form_id: str,
+        db: Session
+):
+    form = form_crud.get_form_by_id(form_id, db)
+    if form is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="表單不存在"
+        )
+
+    # 1.1 撈出 questions
+    questions = question_crud.get_questions_by_form_id(form_id, db)
+    question_ids = [question.id for question in questions]
+    questions_map = {question.id: question.title for question in questions}
+
+    # 1.2 撈出所有回覆 by individual
+    replies = crud.get_replies_by_question_ids(question_ids, db)
+
+    # 1.3 generate a list of objects
+    # where object like {individual_id: {question_id_1: response_1, question_id_2: response_2, ...}}
+    individual_responses = {}
+    for single_reply in replies:
+        if single_reply.individual_id not in individual_responses:
+            individual_responses[single_reply.individual_id] = {}
+        individual_responses[single_reply.individual_id][single_reply.question_id] = single_reply.response
+
+    # 1.4 generate a list of data for pandas dataframe (for excel)
+    # where data like {
+    #     'Column_1': [value_1_individual_1, value_1_individual_2, ...],
+    #     'Column_2': [value_2_individual_1, value_2_individual_2, ...],
+    #   }
+
+    data = {}
+    for question_id in question_ids:
+        data[question_id] = []
+
+    for responses_per_individual in individual_responses.values():
+        for question_id in data:
+            data[question_id].append(responses_per_individual.get(question_id, ""))
+
+    # 1.5 replace question_id in data with question title
+    data = {questions_map.get(question_id): data[question_id] for question_id in data}
+
+    # 1.6 make sure that the order in dict is the same as order in questions
+    data = {question.title: data[question.id] for question in questions}
+
+    # 2. 產生 excel & put object to s3
+    df = pd.DataFrame(data)
+    excel_data = convert_df_to_excel(df)
+    object_name = f"{form_id}/{form.title}.xlsx"
+    await s3_upload_object(
+        contents=excel_data,
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        object_name=object_name
+    )
+
+    # 3. generate pre-signed url
+    pre_signed_url = await create_presigned_url(
+        object_name=object_name
+    )
+
+    if not pre_signed_url:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="無法產生 pre-signed url"
+        )
+
+    return pre_signed_url
