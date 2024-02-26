@@ -19,7 +19,7 @@ party_invite = {
             "description": "",
             "type": QuestionType.SIMPLE.value,
             "is_required": False,
-            "order": 0,
+            "order": 6,
             "options": []
         },
         {
@@ -27,7 +27,7 @@ party_invite = {
             "description": "",
             "type": QuestionType.SINGLE.value,
             "is_required": True,
-            "order": 1,
+            "order": 5,
             "options": [
                 "Yes, I will be there!",
                 "Sorry, I can't make it."
@@ -38,7 +38,7 @@ party_invite = {
             "description": "",
             "type": QuestionType.SIMPLE.value,
             "is_required": False,
-            "order": 2,
+            "order": 4,
             "options": []
         },
         {
@@ -60,7 +60,7 @@ party_invite = {
             "description": "",
             "type": QuestionType.SIMPLE.value,
             "is_required": False,
-            "order": 4,
+            "order": 2,
             "options": []
         },
         {
@@ -68,7 +68,7 @@ party_invite = {
             "description": "",
             "type": QuestionType.COMPLEX.value,
             "is_required": False,
-            "order": 5,
+            "order": 1,
             "options": []
         },
         {
@@ -76,7 +76,7 @@ party_invite = {
             "description": "",
             "type": QuestionType.SIMPLE.value,
             "is_required": False,
-            "order": 6,
+            "order": 0,
             "options": []
         }
     ]
@@ -92,7 +92,7 @@ contact_information = {
             "description": "",
             "type": QuestionType.SIMPLE.value,
             "is_required": True,
-            "order": 0,
+            "order": 4,
             "options": []
         },
         {
@@ -100,7 +100,7 @@ contact_information = {
             "description": "",
             "type": QuestionType.SIMPLE.value,
             "is_required": True,
-            "order": 1,
+            "order": 3,
             "options": []
         },
         {
@@ -116,7 +116,7 @@ contact_information = {
             "description": "",
             "type": QuestionType.SIMPLE.value,
             "is_required": False,
-            "order": 3,
+            "order": 1,
             "options": []
         },
         {
@@ -124,7 +124,7 @@ contact_information = {
             "description": "",
             "type": QuestionType.COMPLEX.value,
             "is_required": False,
-            "order": 4,
+            "order": 0,
             "options": []
         }
     ]
@@ -140,7 +140,7 @@ event_registration = {
             "description": "",
             "type": QuestionType.SIMPLE.value,
             "is_required": True,
-            "order": 0,
+            "order": 5,
             "options": []
         },
         {
@@ -148,7 +148,7 @@ event_registration = {
             "description": "",
             "type": QuestionType.SIMPLE.value,
             "is_required": True,
-            "order": 1,
+            "order": 4,
             "options": []
         },
         {
@@ -156,7 +156,7 @@ event_registration = {
             "description": "",
             "type": QuestionType.SIMPLE.value,
             "is_required": True,
-            "order": 2,
+            "order": 3,
             "options": []
         },
         {
@@ -164,7 +164,7 @@ event_registration = {
             "description": "",
             "type": QuestionType.MULTIPLE.value,
             "is_required": True,
-            "order": 3,
+            "order": 2,
             "options": [
                 "Day 1",
                 "Day 2",
@@ -176,7 +176,7 @@ event_registration = {
             "description": "",
             "type": QuestionType.SINGLE.value,
             "is_required": True,
-            "order": 4,
+            "order": 1,
             "options": [
                 "None",
                 "Vegetarian",
@@ -190,7 +190,7 @@ event_registration = {
             "description": "",
             "type": QuestionType.SINGLE.value,
             "is_required": True,
-            "order": 5,
+            "order": 0,
             "options": [
                 "Yes"
             ]
@@ -208,7 +208,7 @@ rsvp = {
             "description": "",
             "type": QuestionType.SINGLE.value,
             "is_required": True,
-            "order": 0,
+            "order": 3,
             "options": [
                 "Yes, I will be there!",
                 "Sorry, I can't make it."
@@ -219,7 +219,7 @@ rsvp = {
             "description": "",
             "type": QuestionType.COMPLEX.value,
             "is_required": False,
-            "order": 1,
+            "order": 2,
             "options": []
         },
         {
@@ -227,7 +227,7 @@ rsvp = {
             "description": "",
             "type": QuestionType.MULTIPLE.value,
             "is_required": False,
-            "order": 2,
+            "order": 1,
             "options": [
                 "Website",
                 "Friend",
@@ -240,7 +240,7 @@ rsvp = {
             "description": "",
             "type": QuestionType.COMPLEX.value,
             "is_required": False,
-            "order": 3,
+            "order": 0,
             "options": []
         }
     ]
@@ -256,7 +256,7 @@ customer_feedback = {
             "description": "",
             "type": QuestionType.SINGLE.value,
             "is_required": False,
-            "order": 0,
+            "order": 4,
             "options": [
                 "Comments",
                 "Questions",
@@ -269,7 +269,7 @@ customer_feedback = {
             "description": "",
             "type": QuestionType.COMPLEX.value,
             "is_required": True,
-            "order": 1,
+            "order": 3,
             "options": []
         },
         {
@@ -285,7 +285,7 @@ customer_feedback = {
             "description": "",
             "type": QuestionType.SIMPLE.value,
             "is_required": False,
-            "order": 3,
+            "order": 1,
             "options": []
         },
         {
@@ -293,7 +293,7 @@ customer_feedback = {
             "description": "",
             "type": QuestionType.SIMPLE.value,
             "is_required": False,
-            "order": 4,
+            "order": 0,
             "options": []
         }
     ]

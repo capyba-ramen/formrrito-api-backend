@@ -277,8 +277,7 @@ async def export_responses(
 
     # 1.1 撈出 questions
     questions = question_crud.get_questions_by_form_id(form_id, db)
-    question_ids = [question.id for question in questions]
-    questions_map = {question.id: question.title for question in questions}
+    question_ids = [question.id for question in questions]  # 已照順序
 
     # 1.2 撈出所有回覆 by individual
     replies = crud.get_replies_by_question_ids(question_ids, db)
@@ -291,28 +290,22 @@ async def export_responses(
             individual_responses[single_reply.individual_id] = {}
         individual_responses[single_reply.individual_id][single_reply.question_id] = single_reply.response
 
-    # 1.4 generate a list of data for pandas dataframe (for excel)
-    # where data like {
-    #     'Column_1': [value_1_individual_1, value_1_individual_2, ...],
-    #     'Column_2': [value_2_individual_1, value_2_individual_2, ...],
-    #   }
+    # prepare individual_responses according to questions as columns
+    data_list = []
+    for individual_response in individual_responses.values():
+        data_list.append(tuple(individual_response.get(question_id, "") for question_id in question_ids))
 
-    data = {}
-    for question_id in question_ids:
-        data[question_id] = []
-
-    for responses_per_individual in individual_responses.values():
-        for question_id in data:
-            data[question_id].append(responses_per_individual.get(question_id, ""))
-
-    # 1.5 replace question_id in data with question title
-    data = {questions_map.get(question_id): data[question_id] for question_id in data}
-
-    # 1.6 make sure that the order in dict is the same as order in questions
-    data = {question.title: data[question.id] for question in questions}
+    # 1.4 prepare columns
+    columns = [question.title for question in questions]
 
     # 2. 產生 excel & put object to s3
-    df = pd.DataFrame(data)
+    # columns = ['id', 'name', 'age']
+    # data_list = [
+    #     (1, 'John', 25),
+    #     (2, 'Jane', 30),
+    #     (3, 'Bob', 22)
+    # ]
+    df = pd.DataFrame(data_list, columns=columns)
     excel_data = convert_df_to_excel(df)
     object_name = f"{form_id}/{form.title}.xlsx"
     await s3_upload_object(
