@@ -278,6 +278,7 @@ async def export_responses(
     # 1.1 撈出 questions
     questions = question_crud.get_questions_by_form_id(form_id, db)
     question_ids = [question.id for question in questions]  # 已照順序
+    question_ids.insert(0, 'response_time')
 
     # 1.2 撈出所有回覆 by individual
     replies = crud.get_replies_by_question_ids(question_ids, db)
@@ -289,14 +290,17 @@ async def export_responses(
         if single_reply.individual_id not in individual_responses:
             individual_responses[single_reply.individual_id] = {}
         individual_responses[single_reply.individual_id][single_reply.question_id] = single_reply.response
+        individual_responses[single_reply.individual_id]['response_time'] = single_reply.created_at.strftime(
+            '%Y-%m-%d %H:%M:%S')
 
     # prepare individual_responses according to questions as columns
     data_list = []
     for individual_response in individual_responses.values():
         data_list.append(tuple(individual_response.get(question_id, "") for question_id in question_ids))
 
-    # 1.4 prepare columns
+    # 1.4 prepare columns but add 'Response Time to the first column'
     columns = [question.title for question in questions]
+    columns.insert(0, 'Response Time')
 
     # 2. 產生 excel & put object to s3
     # columns = ['id', 'name', 'age']
