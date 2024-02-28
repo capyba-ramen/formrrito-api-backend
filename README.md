@@ -3,7 +3,7 @@
 - [Introduction](#-Introduction)
 - [Features](#-Features)
 - [Table Schema](#-Table-Schema)
-- [Architecture with Tech Stack](#-Architecture with Tech Stack)
+- [Architecture with Tech Stack](#-Architecture-with-Tech-Stack)
 
 ## Introduction
 
