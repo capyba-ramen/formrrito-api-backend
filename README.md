@@ -39,3 +39,4 @@ To experience, please visit [here](https://www.formrrito.fun/forms)
 - GitHub Actions for CI/CD
 - AWS for deployment and static file storage
 - Docker for containerization
+- Notion for project management
