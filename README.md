@@ -27,9 +27,13 @@ To experience, please visit [here](https://www.formrrito.fun/forms)
 
 ## Table Schema
 
+![image](https://github.com/capyba-ramen/formrrito-api-backend/assets/105725219/9016bfd6-3f49-4ba9-a7e5-8aa6b6fd0329)
+
+
 ## Architecture with Tech Stack
 
-- FastAPI(Python) as web framework
-- MySQL as database
-- python package alemmbic for database migration
+![image](https://github.com/capyba-ramen/formrrito-api-backend/assets/105725219/78406a58-8699-4892-8d83-2e4513272540)
 
+- FastAPI as web framework
+- MySQL as database
+- Python package alemmbic for database migration
