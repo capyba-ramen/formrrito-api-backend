@@ -1,9 +1,9 @@
 ## Table of Contents
 
-- [Introduction](#-Introduction)
-- [Features](#-Features)
-- [Table Schema](#-Table-Schema)
-- [Architecture with Tech Stack](#-Architecture-with-Tech-Stack)
+- [Introduction](#introduction)
+- [Features](#features)
+- [Table Schema](#table-schema)
+- [Architecture with Tech Stack](#architecture-with-tech-stack)
 
 ## Introduction
 
