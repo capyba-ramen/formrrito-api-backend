@@ -300,7 +300,7 @@ async def export_responses(
 
     # 1.4 prepare columns but add 'Response Time to the first column'
     columns = [question.title for question in questions]
-    columns.insert(0, 'Response Time')
+    columns.insert(0, 'Response Time (UTC)')
 
     # 2. 產生 excel & put object to s3
     # columns = ['id', 'name', 'age']
