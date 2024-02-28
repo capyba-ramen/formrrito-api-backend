@@ -159,7 +159,7 @@ def reply(
                 detail=f"問題類型錯誤<question_id:{single_reply.question_id}, question_type={single_reply.question_type}>"
             )
 
-    return True, form.title, form.user.email
+    return True, form.title, form.user.email, form.user.username
 
 
 def get_statistics(
