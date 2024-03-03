@@ -10,7 +10,7 @@
 This is a form creation platform that enables you to build form, collects responses and wraps up your idea with enriched
 user experience
 
-To know more about the details on features, please see [below](#-Table-Schema)
+To know more about the details on features, please see [below](#features)
 
 To experience, please visit [here](https://www.formrrito.fun/forms)
 
