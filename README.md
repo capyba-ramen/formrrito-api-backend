@@ -5,7 +5,7 @@
 - [Table Schema](#table-schema)
 - [Architecture with Tech Stack](#architecture-with-tech-stack)
 
-## Introduction
+## Introduction 
 
 This is a form creation platform that enables you to build form, collects responses and wraps up your idea with enriched
 user experience
