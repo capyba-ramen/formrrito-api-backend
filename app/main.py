@@ -70,7 +70,8 @@ origins = [
     "http://localhost:3333",
     "https://3.143.58.231",
     "https://3.143.58.231:3333",
-    "https://www.formrrito.fun"
+    "https://www.formrrito.fun",
+    "https://formrrito-next.vercel.app"
 ]
 
 app.add_middleware(
